@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#0a1020" />
+    <title>下一百层 | Game Hub</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main class="game-shell">
+      <section class="game-panel" aria-label="下一百层游戏">
+        <header class="game-header">
+          <a class="hub-link" href="../../index.html#/">Game Hub</a>
+          <div>
+            <h1>下一百层</h1>
+            <p id="gameStatus">按住左右半屏移动</p>
+          </div>
+          <button id="restartButton" type="button">重新开始</button>
+        </header>
+
+        <div class="canvas-wrap">
+          <canvas id="gameCanvas" width="450" height="800" aria-label="下一百层游戏画布"></canvas>
+
+          <div id="gameOverPanel" class="game-over" hidden>
+            <strong>Game Over</strong>
+            <span>层数 <b id="finalScore">0</b></span>
+            <button id="overlayRestartButton" type="button">重新开始</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="./game.js" defer></script>
+  </body>
+</html>

@@ -63,6 +63,15 @@ const games = [
     theme: "linear-gradient(135deg, #07111f, #22c55e)"
   },
   {
+    id: "nsshaft",
+    name: "下一百层",
+    path: "./games/nsshaft/index.html",
+    description: "控制小方块踩平台下行，避开顶部钉子和地刺。",
+    tags: ["Arcade", "Mobile"],
+    art: "NS",
+    theme: "linear-gradient(135deg, #0a1020, #38bdf8)"
+  },
+  {
     id: "needle",
     name: "见缝插针",
     path: "./games/needle/index.html",
