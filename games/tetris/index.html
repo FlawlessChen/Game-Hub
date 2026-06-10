@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#171b22" />
+    <title>俄罗斯方块 | Game Hub</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="game-stage" aria-label="俄罗斯方块棋盘">
+        <div class="stage-header">
+          <div>
+            <a class="hub-link" href="../../index.html#/">Game Hub</a>
+            <h1>俄罗斯方块</h1>
+            <p id="gameStatus">准备开始</p>
+          </div>
+          <div class="header-actions">
+            <button id="startButton" class="primary" type="button">开始</button>
+            <button id="pauseButton" type="button">暂停</button>
+            <button id="resetButton" type="button">重开</button>
+          </div>
+        </div>
+
+        <div class="mobile-hud" aria-label="手机端游戏信息" aria-live="polite">
+          <canvas id="mobileNextCanvas" width="56" height="56" aria-label="下一个方块"></canvas>
+          <div class="mobile-metric">
+            <span>分数</span>
+            <strong id="mobileScoreValue">0</strong>
+          </div>
+          <div class="mobile-metric">
+            <span>等级</span>
+            <strong id="mobileLevelValue">1</strong>
+          </div>
+          <div class="mobile-metric">
+            <span>行数</span>
+            <strong id="mobileLinesValue">0</strong>
+          </div>
+          <div class="mobile-metric">
+            <span>最高</span>
+            <strong id="mobileBestValue">0</strong>
+          </div>
+        </div>
+
+        <div class="board-wrap">
+          <canvas id="boardCanvas" width="320" height="640"></canvas>
+          <div id="overlay" class="overlay is-visible">
+            <strong>俄罗斯方块</strong>
+            <span>点击开始</span>
+          </div>
+        </div>
+
+        <div class="touch-controls" aria-label="触屏控制">
+          <button id="leftButton" type="button" aria-label="左移" title="左移">←</button>
+          <button id="rotateButton" type="button" aria-label="旋转" title="旋转">↻</button>
+          <button id="rightButton" type="button" aria-label="右移" title="右移">→</button>
+          <button id="downButton" type="button" aria-label="加速下落" title="加速下落">↓</button>
+        </div>
+      </section>
+
+      <aside class="side-panel" aria-label="游戏信息">
+        <section class="info-block next-block">
+          <div class="block-head">
+            <h2>下一个</h2>
+          </div>
+          <canvas id="nextCanvas" width="144" height="144"></canvas>
+        </section>
+
+        <section class="info-grid" aria-live="polite">
+          <div class="metric">
+            <span>分数</span>
+            <strong id="scoreValue">0</strong>
+          </div>
+          <div class="metric">
+            <span>等级</span>
+            <strong id="levelValue">1</strong>
+          </div>
+          <div class="metric">
+            <span>行数</span>
+            <strong id="linesValue">0</strong>
+          </div>
+          <div class="metric">
+            <span>最高</span>
+            <strong id="bestValue">0</strong>
+          </div>
+        </section>
+
+        <section class="info-block">
+          <div class="block-head">
+            <h2>设置</h2>
+          </div>
+          <div class="settings">
+            <button id="soundButton" type="button" aria-pressed="true">声音开</button>
+            <button id="themeButton" type="button">切换主题</button>
+          </div>
+        </section>
+      </aside>
+    </main>
+
+    <script src="./game.js" defer></script>
+  </body>
+</html>

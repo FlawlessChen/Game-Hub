@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>飞翔的小鸟 | Game Hub</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main class="game-page">
+      <header class="game-header">
+        <a class="hub-link" href="../../index.html#/">Game Hub</a>
+
+        <div class="score-strip" aria-label="计分板">
+          <div class="score-box">
+            <span>得分</span>
+            <strong id="score">0</strong>
+          </div>
+          <div class="score-box">
+            <span>最高</span>
+            <strong id="best-score">0</strong>
+          </div>
+          <button id="restart" class="icon-button" type="button" aria-label="新游戏" title="新游戏">
+            &#8635;
+          </button>
+        </div>
+      </header>
+
+      <section class="play-layout">
+        <section class="board-section" aria-labelledby="game-title">
+          <div class="title-row">
+            <div>
+              <h1 id="game-title">飞翔的小鸟</h1>
+              <p id="status">Ready</p>
+            </div>
+            <div class="stage-badge">
+              <span>场景</span>
+              <strong id="stage">晨空</strong>
+            </div>
+          </div>
+
+          <div class="canvas-wrap">
+            <canvas id="game" width="420" height="560" aria-label="飞翔的小鸟游戏画面"></canvas>
+
+            <div id="overlay" class="overlay">
+              <div class="overlay-panel">
+                <h2 id="overlay-title">飞翔的小鸟</h2>
+                <p id="overlay-text">Ready</p>
+                <button id="overlay-action" class="primary-button" type="button">开始</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <aside class="side-panel" aria-label="游戏状态">
+          <div class="metric">
+            <span>通过</span>
+            <strong id="passed">0</strong>
+          </div>
+
+          <div class="metric">
+            <span>角色</span>
+            <strong id="skin">晨羽</strong>
+          </div>
+
+          <button id="flap" class="flap-button" type="button" aria-label="向上飞" title="向上飞">
+            &#8593;
+          </button>
+
+          <button id="pause" class="secondary-button" type="button">暂停</button>
+        </aside>
+      </section>
+    </main>
+
+    <script src="./game.js" defer></script>
+  </body>
+</html>

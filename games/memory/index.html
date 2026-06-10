@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>记忆翻牌 | Game Hub</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main class="game-page">
+      <header class="game-header">
+        <a class="hub-link" href="../../index.html#/">Game Hub</a>
+
+        <div class="score-strip" aria-label="计分板">
+          <div class="score-box">
+            <span>步数</span>
+            <strong id="moves">0</strong>
+          </div>
+          <div class="score-box">
+            <span>最佳</span>
+            <strong id="best-score">--</strong>
+          </div>
+          <button id="restart" class="icon-button" type="button" aria-label="新游戏" title="新游戏">
+            &#8635;
+          </button>
+        </div>
+      </header>
+
+      <section class="play-layout">
+        <section class="board-section" aria-labelledby="game-title">
+          <div class="title-row">
+            <div>
+              <h1 id="game-title">记忆翻牌</h1>
+              <p id="status">Ready</p>
+            </div>
+            <div class="mode-badge">
+              <span>牌组</span>
+              <strong>4 x 4</strong>
+            </div>
+          </div>
+
+          <div class="board-wrap">
+            <section id="board" class="memory-board" aria-label="记忆翻牌棋盘"></section>
+
+            <div id="overlay" class="overlay">
+              <div class="overlay-panel">
+                <h2 id="overlay-title">记忆翻牌</h2>
+                <p id="overlay-text">Ready</p>
+                <button id="overlay-action" class="primary-button" type="button">开始</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <aside class="side-panel" aria-label="游戏状态">
+          <div class="metric">
+            <span>配对</span>
+            <strong id="matches">0/8</strong>
+          </div>
+
+          <div class="metric">
+            <span>时间</span>
+            <strong id="timer">00:00</strong>
+          </div>
+
+          <div class="metric">
+            <span>准确率</span>
+            <strong id="accuracy">100%</strong>
+          </div>
+
+          <button id="shuffle" class="secondary-button" type="button">洗牌</button>
+        </aside>
+      </section>
+    </main>
+
+    <script src="./game.js" defer></script>
+  </body>
+</html>
