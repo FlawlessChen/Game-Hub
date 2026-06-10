@@ -54,6 +54,33 @@ const games = [
     theme: "linear-gradient(135deg, #c43d3d, #ba6b12)"
   },
   {
+    id: "brick",
+    name: "打砖块",
+    path: "./games/brick/index.html",
+    description: "用挡板反弹小球，击碎彩色砖块并接住道具。",
+    tags: ["Arcade", "Canvas"],
+    art: "BRK",
+    theme: "linear-gradient(135deg, #07111f, #22c55e)"
+  },
+  {
+    id: "needle",
+    name: "见缝插针",
+    path: "./games/needle/index.html",
+    description: "把编号小针插进旋转大球，避开已有针脚。",
+    tags: ["Timing", "Canvas"],
+    art: "PIN",
+    theme: "linear-gradient(135deg, #2563eb, #dc2626)"
+  },
+  {
+    id: "tower",
+    name: "建楼大师",
+    path: "./games/tower/index.html",
+    description: "放下摆动楼层，裁掉偏差，向上叠出更高楼。",
+    tags: ["Timing", "Stack"],
+    art: "BLD",
+    theme: "linear-gradient(135deg, #0f766e, #d97706)"
+  },
+  {
     id: "tetris",
     name: "俄罗斯方块",
     path: "./games/tetris/index.html",

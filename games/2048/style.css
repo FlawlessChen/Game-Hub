@@ -412,37 +412,93 @@ a {
 }
 
 @media (max-width: 560px) {
+  body {
+    overflow-x: hidden;
+  }
+
   .game-page {
-    width: min(100% - 1rem, 1120px);
-    padding-top: 0.75rem;
+    width: min(100% - 0.75rem, 1120px);
+    padding-top: 0.5rem;
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
   }
 
   .game-header {
     align-items: stretch;
     flex-direction: column;
+    gap: 0.45rem;
+    min-height: 0;
+  }
+
+  .hub-link {
+    align-self: flex-start;
+    min-height: 1.9rem;
+    padding: 0 0.65rem;
+    font-size: 0.78rem;
   }
 
   .score-strip {
     display: grid;
     grid-template-columns: 1fr 1fr auto;
+    gap: 0.4rem;
   }
 
   .score-box {
     min-width: 0;
+    min-height: 2.35rem;
+    padding: 0.35rem 0.5rem;
+  }
+
+  .score-box span {
+    font-size: 0.68rem;
+  }
+
+  .score-box strong {
+    font-size: 1rem;
+  }
+
+  .icon-button {
+    width: 2.35rem;
+    min-height: 2.35rem;
+  }
+
+  .play-layout {
+    gap: 0.45rem;
+    margin-top: 0.5rem;
   }
 
   .title-row {
-    align-items: start;
-    flex-direction: column;
+    align-items: center;
+    flex-direction: row;
+    margin-bottom: 0.5rem;
   }
 
   .title-row h1 {
-    font-size: 2.7rem;
+    font-size: 1.65rem;
+  }
+
+  .title-row p {
+    display: none;
+  }
+
+  .goal-badge {
+    min-width: auto;
+    min-height: 1.95rem;
+    padding: 0 0.55rem;
+    font-size: 0.76rem;
   }
 
   .board-section,
   .side-panel {
     padding: 0.75rem;
+  }
+
+  .board-section {
+    padding: 0.5rem;
+  }
+
+  .board-wrap {
+    width: min(100%, max(13rem, calc(100svh - 17rem)));
+    margin: 0 auto;
   }
 
   .board {
@@ -462,10 +518,26 @@ a {
   }
 
   .side-panel {
-    grid-template-columns: 1fr;
+    display: contents;
+  }
+
+  .metric {
+    display: none;
+  }
+
+  .control-pad {
+    grid-column: 1 / -1;
+    gap: 0.4rem;
+    margin-top: 0;
+    padding: 0.45rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 0.5rem;
+    box-shadow: 0 8px 22px rgba(21, 32, 51, 0.07);
   }
 
   .control-pad button {
-    min-height: 3.4rem;
+    min-height: 2.55rem;
+    font-size: 1.45rem;
   }
 }

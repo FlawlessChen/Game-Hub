@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#111827" />
+    <title>见缝插针 | Game Hub</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main class="game-shell">
+      <section class="game-panel" aria-label="见缝插针游戏">
+        <header class="game-header">
+          <a class="hub-link" href="../../index.html#/">Game Hub</a>
+          <div>
+            <h1>见缝插针</h1>
+            <p id="gameStatus">点击屏幕或按空格键发射</p>
+          </div>
+          <button id="restartButton" type="button">重开</button>
+        </header>
+
+        <div class="canvas-wrap">
+          <canvas
+            id="gameCanvas"
+            width="420"
+            height="700"
+            aria-label="旋转大球和待发射小针"
+          ></canvas>
+
+          <div id="gameOverPanel" class="game-over" hidden>
+            <strong>Game Over</strong>
+            <span>针撞到了已有针</span>
+            <button id="overlayRestartButton" type="button">重开</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="./game.js" defer></script>
+  </body>
+</html>

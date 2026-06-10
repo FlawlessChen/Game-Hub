@@ -322,32 +322,92 @@ canvas {
 }
 
 @media (max-width: 560px) {
+  body {
+    overflow-x: hidden;
+  }
+
   .game-page {
-    width: min(100% - 1rem, 1120px);
-    padding-top: 0.75rem;
+    width: min(100% - 0.75rem, 1120px);
+    padding-top: 0.5rem;
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
   }
 
   .game-header {
     align-items: stretch;
     flex-direction: column;
+    gap: 0.45rem;
+    min-height: 0;
+  }
+
+  .hub-link {
+    align-self: flex-start;
+    min-height: 1.9rem;
+    padding: 0 0.65rem;
+    font-size: 0.78rem;
   }
 
   .score-strip {
     display: grid;
     grid-template-columns: 1fr 1fr auto;
+    gap: 0.4rem;
   }
 
   .score-box {
     min-width: 0;
+    min-height: 2.35rem;
+    padding: 0.35rem 0.5rem;
+  }
+
+  .score-box span {
+    font-size: 0.68rem;
+  }
+
+  .score-box strong {
+    font-size: 1rem;
+  }
+
+  .icon-button {
+    width: 2.35rem;
+    min-height: 2.35rem;
+  }
+
+  .play-layout {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.45rem;
+    margin-top: 0.5rem;
+  }
+
+  .board-section {
+    grid-column: 1 / -1;
   }
 
   .title-row {
-    align-items: start;
-    flex-direction: column;
+    align-items: center;
+    flex-direction: row;
+    margin-bottom: 0.5rem;
   }
 
   .title-row h1 {
-    font-size: 2.35rem;
+    font-size: 1.45rem;
+  }
+
+  .title-row p {
+    margin-top: 0.15rem;
+    font-size: 0.78rem;
+  }
+
+  .level-badge {
+    min-width: 4.2rem;
+    min-height: 1.95rem;
+    padding: 0.25rem 0.55rem;
+  }
+
+  .level-badge span {
+    font-size: 0.66rem;
+  }
+
+  .level-badge strong {
+    font-size: 0.9rem;
   }
 
   .board-section,
@@ -355,15 +415,53 @@ canvas {
     padding: 0.75rem;
   }
 
+  .board-section {
+    padding: 0.5rem;
+  }
+
   .canvas-wrap {
+    width: min(100%, max(12.5rem, calc(100svh - 24.5rem)));
+    margin: 0 auto;
     border-width: 0.5rem;
   }
 
   .side-panel {
-    grid-template-columns: 1fr;
+    display: contents;
+  }
+
+  .metric {
+    display: none;
+  }
+
+  .control-pad {
+    grid-column: 1 / -1;
+    order: 1;
+    gap: 0.4rem;
+    padding: 0.45rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 0.5rem;
+    box-shadow: 0 8px 22px rgba(21, 32, 51, 0.07);
   }
 
   .control-pad button {
-    min-height: 3.4rem;
+    min-height: 2.55rem;
+    font-size: 1.45rem;
+  }
+
+  .primary-button.slim,
+  .secondary-button {
+    min-height: 2.35rem;
+    padding: 0 0.7rem;
+  }
+
+  .primary-button.slim {
+    grid-column: 1;
+    order: 2;
+  }
+
+  .secondary-button {
+    grid-column: 2;
+    order: 3;
   }
 }

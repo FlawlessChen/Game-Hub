@@ -1,0 +1,227 @@
+:root {
+  --bg: #edf3f8;
+  --panel: #ffffff;
+  --text: #102033;
+  --muted: #627086;
+  --line: #d6e0ea;
+  --accent: #0f766e;
+  --accent-dark: #115e59;
+  --amber: #d97706;
+  --red: #dc2626;
+  --shadow: 0 22px 54px rgba(16, 32, 51, 0.14);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100svh;
+  color: var(--text);
+  background: linear-gradient(180deg, #fbfcff 0%, var(--bg) 58%, #dde8f0 100%);
+  font-family:
+    Inter, "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+a {
+  font: inherit;
+}
+
+.game-shell {
+  display: grid;
+  min-height: 100vh;
+  min-height: 100svh;
+  place-items: center;
+  padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right))
+    max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+}
+
+.game-panel {
+  display: grid;
+  gap: 1rem;
+  width: min(100%, 34rem);
+}
+
+.game-header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  gap: 0.8rem;
+  align-items: center;
+  padding: 0.85rem;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(214, 224, 234, 0.92);
+  border-radius: 0.5rem;
+  box-shadow: 0 12px 34px rgba(16, 32, 51, 0.08);
+  backdrop-filter: blur(14px);
+}
+
+.hub-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.35rem;
+  padding: 0 0.75rem;
+  color: #ffffff;
+  background: var(--text);
+  border-radius: 0.4rem;
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.title-block h1 {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.1;
+  letter-spacing: 0;
+}
+
+.title-block p {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.35;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(3.4rem, 1fr));
+  gap: 0.4rem;
+}
+
+.metrics div {
+  display: grid;
+  min-height: 2.7rem;
+  align-content: center;
+  padding: 0.3rem 0.55rem;
+  background: #f4f8fb;
+  border: 1px solid var(--line);
+  border-radius: 0.4rem;
+}
+
+.metrics span {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.metrics strong {
+  font-size: 1rem;
+  line-height: 1.1;
+}
+
+button {
+  min-height: 2.35rem;
+  padding: 0 0.85rem;
+  color: #ffffff;
+  background: var(--accent);
+  border: 0;
+  border-radius: 0.4rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+button:hover {
+  background: var(--accent-dark);
+}
+
+.canvas-wrap {
+  position: relative;
+  display: grid;
+  overflow: hidden;
+  aspect-ratio: 43 / 72;
+  width: min(100%, 31rem);
+  margin: 0 auto;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow);
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: manipulation;
+}
+
+.game-over {
+  position: absolute;
+  inset: auto 1rem 1rem;
+  display: grid;
+  gap: 0.55rem;
+  justify-items: center;
+  padding: 1rem;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(214, 224, 234, 0.95);
+  border-radius: 0.5rem;
+  box-shadow: 0 16px 38px rgba(16, 32, 51, 0.18);
+  text-align: center;
+  backdrop-filter: blur(12px);
+}
+
+.game-over[hidden] {
+  display: none;
+}
+
+.game-over strong {
+  color: var(--red);
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.game-over span {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.game-over b {
+  color: var(--amber);
+}
+
+@media (max-width: 620px) {
+  .game-shell {
+    align-items: stretch;
+    padding: 0.75rem;
+  }
+
+  .game-panel {
+    width: 100%;
+  }
+
+  .game-header {
+    grid-template-columns: 1fr auto;
+  }
+
+  .hub-link,
+  .metrics {
+    grid-column: 1 / -1;
+  }
+
+  .canvas-wrap {
+    width: 100%;
+    min-height: 34rem;
+  }
+}
+
+@media (max-height: 760px) and (min-width: 621px) {
+  .game-shell {
+    padding-block: 0.75rem;
+  }
+
+  .canvas-wrap {
+    width: min(100%, 27rem);
+  }
+}
