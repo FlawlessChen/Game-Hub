@@ -104,13 +104,28 @@ const app = document.querySelector("#app");
 const navLinks = [...document.querySelectorAll("[data-route-link]")];
 const gamePageTrackedLaunches = new Set(["brick", "nsshaft"]);
 const FAVORITE_STORE_KEY = "game-hub-favorites-v1";
+const DAILY_CHALLENGE_POOL = [
+  { gameId: "2048", target: 512, label: "达到 512 分", unit: "分" },
+  { gameId: "snake", target: 100, label: "达到 100 分", unit: "分" },
+  { gameId: "plane", target: 1200, label: "达到 1200 分", unit: "分" },
+  { gameId: "flappy", target: 10, label: "达到 10 分", unit: "分" },
+  { gameId: "memory", target: 40, label: "40 步内完成", unit: "步", better: "lower" },
+  { gameId: "mole", target: 300, label: "达到 300 分", unit: "分" },
+  { gameId: "brick", target: 200, label: "达到 200 分", unit: "分" },
+  { gameId: "nsshaft", target: 20, label: "下潜 20 层", unit: "层" },
+  { gameId: "needle", target: 6, label: "插入 6 根针", unit: "根" },
+  { gameId: "tower", target: 10, label: "盖到 10 层", unit: "层" },
+  { gameId: "tetris", target: 1000, label: "达到 1000 分", unit: "分" },
+];
 
 function getProgress(game) {
   if (!window.GameHubProgress) {
     return {
+      best: 0,
       bestText: "暂无记录",
       hasBest: false,
       plays: 0,
+      lastPlayed: "",
       achievements: [],
       unlockedAchievements: 0,
       totalAchievements: 0,
@@ -169,6 +184,43 @@ function getRecentGames(limit = 4) {
     .sort((first, second) => Date.parse(second.progress.lastPlayed) - Date.parse(first.progress.lastPlayed))
     .slice(0, limit)
     .map((item) => item.game);
+}
+
+function getTodayKey() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function hashString(value) {
+  return [...value].reduce((hash, char) => ((hash * 31 + char.charCodeAt(0)) >>> 0), 0);
+}
+
+function getDailyChallenges(limit = 3) {
+  const todayKey = getTodayKey();
+  return DAILY_CHALLENGE_POOL
+    .map((challenge) => ({
+      ...challenge,
+      order: hashString(`${todayKey}:${challenge.gameId}`),
+      game: games.find((game) => game.id === challenge.gameId),
+    }))
+    .filter((challenge) => challenge.game)
+    .sort((first, second) => first.order - second.order)
+    .slice(0, limit)
+    .map(({ order, ...challenge }) => challenge);
+}
+
+function isChallengeComplete(challenge, progress) {
+  const best = Number(progress.best || 0);
+  if (challenge.better === "lower") return best > 0 && best <= challenge.target;
+  return best >= challenge.target;
+}
+
+function formatChallengeBest(challenge, progress) {
+  if (!progress.hasBest) return "暂无记录";
+  return `${progress.best} ${challenge.unit}`;
 }
 
 function formatPlays(plays) {
@@ -269,10 +321,49 @@ function renderQuickSection(title, items, summaryText, emptyText) {
   `;
 }
 
+function challengeCard(challenge) {
+  const progress = getProgress(challenge.game);
+  const complete = isChallengeComplete(challenge, progress);
+  return `
+    <article class="challenge-card ${complete ? "is-complete" : ""}">
+      <a class="challenge-art" style="--art-bg: ${challenge.game.theme}" href="#/game/${challenge.game.id}" aria-label="${challenge.game.name}">
+        <span>${challenge.game.art}</span>
+      </a>
+      <div class="challenge-body">
+        <div>
+          <h3>${challenge.game.name}</h3>
+          <span class="challenge-status">${complete ? "已完成" : "未完成"}</span>
+        </div>
+        <p>${challenge.label}</p>
+        <small>当前：${formatChallengeBest(challenge, progress)}</small>
+      </div>
+      <a class="challenge-link" href="#/game/${challenge.game.id}">去挑战</a>
+    </article>
+  `;
+}
+
+function renderDailyChallengeSection(challenges) {
+  const completedCount = challenges.filter((challenge) =>
+    isChallengeComplete(challenge, getProgress(challenge.game))
+  ).length;
+  return `
+    <section class="daily-section" aria-label="每日挑战">
+      <div class="section-head">
+        <h2>每日挑战</h2>
+        <span>完成 ${completedCount}/${challenges.length}</span>
+      </div>
+      <div class="challenge-grid">
+        ${challenges.map(challengeCard).join("")}
+      </div>
+    </section>
+  `;
+}
+
 function renderHome() {
   const progress = getProgressSummary();
   const recentGames = getRecentGames();
   const favoriteGames = getFavoriteGames();
+  const dailyChallenges = getDailyChallenges();
   app.innerHTML = `
     <section class="dashboard">
       <div class="summary">
@@ -299,6 +390,8 @@ function renderHome() {
           </div>
         </div>
       </div>
+
+      ${renderDailyChallengeSection(dailyChallenges)}
 
       ${renderQuickSection(
         "最近游玩",
