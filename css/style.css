@@ -332,6 +332,107 @@ a {
   border-top: 1px solid var(--line);
 }
 
+.quick-section {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.quick-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.quick-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  gap: 0.75rem;
+  min-width: 0;
+  padding: 0.85rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 24px rgba(23, 32, 51, 0.07);
+}
+
+.quick-art {
+  display: grid;
+  width: 3.35rem;
+  height: 3.35rem;
+  place-items: center;
+  color: #ffffff;
+  background: var(--art-bg);
+  border-radius: 0.5rem;
+  font-size: 1.2rem;
+  font-weight: 900;
+}
+
+.quick-art span {
+  display: grid;
+  width: 2.2rem;
+  height: 2.2rem;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 0.4rem;
+}
+
+.quick-body {
+  display: grid;
+  min-width: 0;
+  gap: 0.25rem;
+}
+
+.quick-body h3 {
+  overflow: hidden;
+  margin: 0;
+  font-size: 0.98rem;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.quick-body p {
+  overflow: hidden;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.quick-body span {
+  color: var(--green);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.quick-link {
+  grid-column: 1 / -1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.1rem;
+  color: var(--accent);
+  background: #f2f5f9;
+  border: 1px solid var(--line);
+  border-radius: 0.4rem;
+  font-size: 0.84rem;
+  font-weight: 900;
+}
+
+.empty-strip {
+  padding: 1rem;
+  color: var(--muted);
+  background: #f7f9fc;
+  border: 1px dashed var(--line);
+  border-radius: 0.5rem;
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
 .status {
   color: var(--green);
   font-size: 0.82rem;
@@ -496,6 +597,16 @@ a {
   font-weight: 800;
 }
 
+.favorite-button {
+  cursor: pointer;
+}
+
+.favorite-button.is-active {
+  color: #ffffff;
+  background: var(--green);
+  border-color: var(--green);
+}
+
 .empty {
   padding: 3rem 1.5rem;
   background: var(--panel);
@@ -526,6 +637,10 @@ a {
   }
 
   .game-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .quick-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -585,6 +700,10 @@ a {
   }
 
   .game-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .quick-grid {
     grid-template-columns: 1fr;
   }
 
@@ -673,6 +792,17 @@ a {
   .game-progress,
   .achievement-list {
     grid-template-columns: 1fr;
+  }
+
+  .quick-card {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+  }
+
+  .quick-link {
+    grid-column: auto;
+    min-width: 4rem;
+    padding: 0 0.65rem;
   }
 
   .button,

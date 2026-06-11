@@ -103,6 +103,7 @@ const games = [
 const app = document.querySelector("#app");
 const navLinks = [...document.querySelectorAll("[data-route-link]")];
 const gamePageTrackedLaunches = new Set(["brick", "nsshaft"]);
+const FAVORITE_STORE_KEY = "game-hub-favorites-v1";
 
 function getProgress(game) {
   if (!window.GameHubProgress) {
@@ -125,12 +126,72 @@ function getProgressSummary() {
   return window.GameHubProgress.getSummary(games);
 }
 
+function readFavoriteIds() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(FAVORITE_STORE_KEY) || "[]");
+    if (!Array.isArray(stored)) return [];
+    return stored.filter((id) => games.some((game) => game.id === id));
+  } catch {
+    return [];
+  }
+}
+
+function writeFavoriteIds(ids) {
+  try {
+    localStorage.setItem(FAVORITE_STORE_KEY, JSON.stringify(ids));
+  } catch {
+    // 收藏是本地增强能力，失败时不影响游戏入口。
+  }
+}
+
+function isFavorite(gameId) {
+  return readFavoriteIds().includes(gameId);
+}
+
+function toggleFavorite(gameId) {
+  const favoriteIds = readFavoriteIds();
+  const nextIds = favoriteIds.includes(gameId)
+    ? favoriteIds.filter((id) => id !== gameId)
+    : [gameId, ...favoriteIds];
+  writeFavoriteIds(nextIds);
+}
+
+function getFavoriteGames() {
+  return readFavoriteIds()
+    .map((id) => games.find((game) => game.id === id))
+    .filter(Boolean);
+}
+
+function getRecentGames(limit = 4) {
+  return games
+    .map((game) => ({ game, progress: getProgress(game) }))
+    .filter((item) => item.progress.lastPlayed)
+    .sort((first, second) => Date.parse(second.progress.lastPlayed) - Date.parse(first.progress.lastPlayed))
+    .slice(0, limit)
+    .map((item) => item.game);
+}
+
 function formatPlays(plays) {
   return plays > 0 ? `${plays} 次启动` : "未开始";
 }
 
 function formatAchievementCount(progress) {
   return `${progress.unlockedAchievements}/${progress.totalAchievements} 个成就`;
+}
+
+function formatLastPlayed(value) {
+  const timestamp = Date.parse(value || "");
+  if (!Number.isFinite(timestamp)) return "还没开始";
+
+  const minutes = Math.max(0, Math.floor((Date.now() - timestamp) / 60000));
+  if (minutes < 1) return "刚刚玩过";
+  if (minutes < 60) return `${minutes} 分钟前`;
+
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} 小时前`;
+
+  const days = Math.floor(hours / 24);
+  return `${days} 天前`;
 }
 
 function achievementBadges(progress) {
@@ -175,8 +236,43 @@ function gameCard(game) {
   `;
 }
 
+function quickGameCard(game) {
+  const progress = getProgress(game);
+  return `
+    <article class="quick-card">
+      <a class="quick-art" style="--art-bg: ${game.theme}" href="#/game/${game.id}" aria-label="${game.name}">
+        <span>${game.art}</span>
+      </a>
+      <div class="quick-body">
+        <h3>${game.name}</h3>
+        <p>${progress.bestText}</p>
+        <span>${formatLastPlayed(progress.lastPlayed)}</span>
+      </div>
+      <a class="quick-link" href="#/game/${game.id}">进入</a>
+    </article>
+  `;
+}
+
+function renderQuickSection(title, items, summaryText, emptyText) {
+  return `
+    <section class="quick-section" aria-label="${title}">
+      <div class="section-head">
+        <h2>${title}</h2>
+        <span>${summaryText}</span>
+      </div>
+      ${
+        items.length
+          ? `<div class="quick-grid">${items.map(quickGameCard).join("")}</div>`
+          : `<div class="empty-strip">${emptyText}</div>`
+      }
+    </section>
+  `;
+}
+
 function renderHome() {
   const progress = getProgressSummary();
+  const recentGames = getRecentGames();
+  const favoriteGames = getFavoriteGames();
   app.innerHTML = `
     <section class="dashboard">
       <div class="summary">
@@ -203,6 +299,20 @@ function renderHome() {
           </div>
         </div>
       </div>
+
+      ${renderQuickSection(
+        "最近游玩",
+        recentGames,
+        recentGames.length ? `${recentGames.length} 个最近入口` : "等待第一次游玩",
+        "开始任意游戏后，这里会自动记录最近入口。"
+      )}
+
+      ${renderQuickSection(
+        "我的收藏",
+        favoriteGames,
+        favoriteGames.length ? `${favoriteGames.length} 款收藏` : "还没有收藏",
+        "进入游戏详情页，可以把常玩的游戏加入收藏。"
+      )}
 
       <div class="section-head">
         <h2>推荐游戏</h2>
@@ -239,6 +349,7 @@ function renderGame(id) {
   }
 
   const progress = getProgress(game);
+  const favorite = isFavorite(game.id);
 
   app.innerHTML = `
     <section class="detail">
@@ -271,6 +382,12 @@ function renderGame(id) {
           </div>
           <div class="detail-actions">
             <a class="button" href="${game.path}" data-game-start="${game.id}">开始</a>
+            <button
+              class="ghost-button favorite-button ${favorite ? "is-active" : ""}"
+              type="button"
+              data-favorite-toggle="${game.id}"
+              aria-pressed="${favorite ? "true" : "false"}"
+            >${favorite ? "已收藏" : "收藏"}</button>
             <a class="ghost-button" href="#/">返回首页</a>
           </div>
         </div>
@@ -326,6 +443,15 @@ function route() {
 app.addEventListener("click", (event) => {
   const target = event.target;
   if (!(target instanceof Element)) return;
+
+  const favoriteButton = target.closest("[data-favorite-toggle]");
+  if (favoriteButton) {
+    const gameId = favoriteButton.dataset.favoriteToggle;
+    if (!gameId) return;
+    toggleFavorite(gameId);
+    renderGame(gameId);
+    return;
+  }
 
   const startLink = target.closest("[data-game-start]");
   if (!startLink || !window.GameHubProgress) return;
