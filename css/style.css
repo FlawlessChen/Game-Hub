@@ -451,6 +451,125 @@ a {
   background: #ffffff;
 }
 
+.goal-section {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.goal-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.goal-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.75rem;
+  min-width: 0;
+  padding: 0.9rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 24px rgba(23, 32, 51, 0.07);
+}
+
+.goal-card.is-complete {
+  background: #eef9f4;
+  border-color: rgba(22, 138, 92, 0.32);
+}
+
+.goal-art {
+  display: grid;
+  width: 3.2rem;
+  height: 3.2rem;
+  place-items: center;
+  color: #ffffff;
+  background: var(--art-bg);
+  border-radius: 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 900;
+}
+
+.goal-art span {
+  display: grid;
+  width: 2.05rem;
+  height: 2.05rem;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 0.4rem;
+}
+
+.goal-body {
+  display: grid;
+  min-width: 0;
+  gap: 0.35rem;
+}
+
+.goal-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.goal-title h3 {
+  overflow: hidden;
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.goal-title span {
+  flex: none;
+  color: var(--accent);
+  font-size: 0.74rem;
+  font-weight: 900;
+}
+
+.goal-card.is-complete .goal-title span {
+  color: var(--green);
+}
+
+.goal-body p,
+.goal-body small {
+  overflow: hidden;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.goal-body small {
+  color: #566177;
+}
+
+.goal-meter {
+  overflow: hidden;
+  height: 0.42rem;
+  background: #e8edf4;
+  border-radius: 999px;
+}
+
+.goal-meter span {
+  display: block;
+  width: var(--goal-percent);
+  height: 100%;
+  background: var(--accent);
+  border-radius: inherit;
+}
+
+.goal-card.is-complete .goal-meter span {
+  background: var(--green);
+}
+
 .quick-section {
   display: grid;
   gap: 0.85rem;
@@ -767,6 +886,10 @@ a {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
+  .goal-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .summary h1 {
     font-size: 3rem;
   }
@@ -831,6 +954,10 @@ a {
   }
 
   .challenge-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .goal-grid {
     grid-template-columns: 1fr;
   }
 

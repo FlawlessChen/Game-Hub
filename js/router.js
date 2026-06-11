@@ -223,6 +223,83 @@ function formatChallengeBest(challenge, progress) {
   return `${progress.best} ${challenge.unit}`;
 }
 
+function getAchievementDefinition(gameId) {
+  if (!window.GameHubProgress || !window.GameHubProgress.definitions) {
+    return { better: "higher" };
+  }
+  return window.GameHubProgress.definitions[gameId] || { better: "higher" };
+}
+
+function clampNumber(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function getAchievementMetric(game, progress, achievement) {
+  const definition = getAchievementDefinition(game.id);
+  const target = Number(achievement.target || 0);
+  if (!target) {
+    return {
+      current: 0,
+      target: 0,
+      ratio: achievement.unlocked ? 1 : 0,
+      label: achievement.unlocked ? "已完成" : "等待挑战",
+    };
+  }
+
+  if (achievement.type === "plays") {
+    const current = Number(progress.plays || 0);
+    return {
+      current,
+      target,
+      ratio: clampNumber(current / target, 0, 1),
+      label: `进度 ${Math.min(current, target)}/${target} 次启动`,
+    };
+  }
+
+  if (achievement.type === "best") {
+    const current = Number(progress.best || 0);
+    const ratio =
+      definition.better === "lower"
+        ? current > 0 ? clampNumber(target / current, 0, 1) : 0
+        : clampNumber(current / target, 0, 1);
+    return {
+      current,
+      target,
+      ratio,
+      label: progress.hasBest ? `当前 ${progress.bestText}` : "暂无记录",
+    };
+  }
+
+  return {
+    current: 0,
+    target,
+    ratio: achievement.unlocked ? 1 : 0,
+    label: achievement.unlocked ? "已完成" : "等待挑战",
+  };
+}
+
+function getAchievementGoals(limit = 4) {
+  const goals = games.flatMap((game) => {
+    const progress = getProgress(game);
+    return progress.achievements.map((achievement) => ({
+      game,
+      achievement,
+      metric: getAchievementMetric(game, progress, achievement),
+    }));
+  });
+
+  const lockedGoals = goals
+    .filter((goal) => !goal.achievement.unlocked)
+    .sort((first, second) => second.metric.ratio - first.metric.ratio || first.game.name.localeCompare(second.game.name));
+
+  if (lockedGoals.length) return lockedGoals.slice(0, limit);
+
+  return goals
+    .filter((goal) => goal.achievement.unlocked)
+    .sort((first, second) => first.game.name.localeCompare(second.game.name))
+    .slice(0, limit);
+}
+
 function formatPlays(plays) {
   return plays > 0 ? `${plays} 次启动` : "未开始";
 }
@@ -359,11 +436,49 @@ function renderDailyChallengeSection(challenges) {
   `;
 }
 
+function achievementGoalCard(goal) {
+  const complete = goal.achievement.unlocked;
+  const percent = Math.round(goal.metric.ratio * 100);
+  return `
+    <article class="goal-card ${complete ? "is-complete" : ""}" style="--goal-percent: ${percent}%">
+      <a class="goal-art" style="--art-bg: ${goal.game.theme}" href="#/game/${goal.game.id}" aria-label="${goal.game.name}">
+        <span>${goal.game.art}</span>
+      </a>
+      <div class="goal-body">
+        <div class="goal-title">
+          <h3>${goal.achievement.name}</h3>
+          <span>${complete ? "已解锁" : `${percent}%`}</span>
+        </div>
+        <p>${goal.game.name} · ${goal.achievement.description}</p>
+        <small>${goal.metric.label}</small>
+        <div class="goal-meter" aria-hidden="true"><span></span></div>
+      </div>
+    </article>
+  `;
+}
+
+function renderAchievementGoalsSection(goals, progressSummary) {
+  return `
+    <section class="goal-section" aria-label="成就目标">
+      <div class="section-head">
+        <h2>成就目标</h2>
+        <span>${progressSummary.unlockedAchievements}/${progressSummary.totalAchievements} 已解锁</span>
+      </div>
+      ${
+        goals.length
+          ? `<div class="goal-grid">${goals.map(achievementGoalCard).join("")}</div>`
+          : `<div class="empty-strip">开始任意游戏后，这里会展示下一批可冲刺成就。</div>`
+      }
+    </section>
+  `;
+}
+
 function renderHome() {
   const progress = getProgressSummary();
   const recentGames = getRecentGames();
   const favoriteGames = getFavoriteGames();
   const dailyChallenges = getDailyChallenges();
+  const achievementGoals = getAchievementGoals();
   app.innerHTML = `
     <section class="dashboard">
       <div class="summary">
@@ -392,6 +507,8 @@ function renderHome() {
       </div>
 
       ${renderDailyChallengeSection(dailyChallenges)}
+
+      ${renderAchievementGoalsSection(achievementGoals, progress)}
 
       ${renderQuickSection(
         "最近游玩",
