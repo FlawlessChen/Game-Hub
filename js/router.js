@@ -170,6 +170,7 @@ const FAVORITE_STORE_KEY = "game-hub-favorites-v1";
 const libraryFilters = {
   query: "",
   status: "all",
+  category: "all",
   sort: "default",
 };
 const DAILY_CHALLENGE_POOL = [
@@ -558,11 +559,22 @@ function getLibrarySearchText(game) {
   return [game.name, game.description, game.art, ...game.tags].join(" ").toLowerCase();
 }
 
+function getLibraryCategories() {
+  return [...new Set(games.flatMap((game) => game.tags))].sort((first, second) =>
+    first.localeCompare(second, "zh-CN")
+  );
+}
+
 function matchesLibraryStatus(game, progress) {
   if (libraryFilters.status === "favorite") return isFavorite(game.id);
   if (libraryFilters.status === "started") return progress.hasBest || progress.plays > 0;
   if (libraryFilters.status === "unplayed") return !progress.hasBest && !progress.plays;
   return true;
+}
+
+function matchesLibraryCategory(game) {
+  if (libraryFilters.category === "all") return true;
+  return game.tags.includes(libraryFilters.category);
 }
 
 function getLibraryItems() {
@@ -571,6 +583,7 @@ function getLibraryItems() {
     .map((game, index) => ({ game, progress: getProgress(game), index }))
     .filter((item) => {
       if (query && !getLibrarySearchText(item.game).includes(query)) return false;
+      if (!matchesLibraryCategory(item.game)) return false;
       return matchesLibraryStatus(item.game, item.progress);
     });
 
@@ -605,12 +618,25 @@ function libraryStatusButton(value, label) {
   `;
 }
 
+function libraryCategoryButton(value, label) {
+  const active = libraryFilters.category === value;
+  return `
+    <button
+      class="category-button ${active ? "is-active" : ""}"
+      type="button"
+      data-library-category="${escapeAttribute(value)}"
+      aria-pressed="${active ? "true" : "false"}"
+    >${label}</button>
+  `;
+}
+
 function librarySortOption(value, label) {
   const selected = libraryFilters.sort === value ? " selected" : "";
   return `<option value="${value}"${selected}>${label}</option>`;
 }
 
 function renderLibraryTools(resultCount) {
+  const categories = getLibraryCategories();
   return `
     <section class="library-tools" aria-label="游戏库筛选">
       <label class="library-search">
@@ -627,6 +653,13 @@ function renderLibraryTools(resultCount) {
         ${libraryStatusButton("started", "有进度")}
         ${libraryStatusButton("unplayed", "未开始")}
         ${libraryStatusButton("favorite", "已收藏")}
+      </div>
+      <div class="library-categories" aria-label="分类标签">
+        <span>分类</span>
+        <div>
+          ${libraryCategoryButton("all", "全部分类")}
+          ${categories.map((category) => libraryCategoryButton(category, category)).join("")}
+        </div>
       </div>
       <label class="library-sort">
         <span>排序</span>
@@ -833,6 +866,13 @@ app.addEventListener("click", (event) => {
   const statusButton = target.closest("[data-library-status]");
   if (statusButton) {
     libraryFilters.status = statusButton.dataset.libraryStatus || "all";
+    renderLibrary();
+    return;
+  }
+
+  const categoryButton = target.closest("[data-library-category]");
+  if (categoryButton) {
+    libraryFilters.category = categoryButton.dataset.libraryCategory || "all";
     renderLibrary();
     return;
   }
