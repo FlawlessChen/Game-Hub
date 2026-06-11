@@ -55,6 +55,27 @@
       better: "higher",
       achievements: scoreAchievements(200, 560),
     },
+    watermelon: {
+      key: "codex-watermelon-best",
+      label: "最佳",
+      suffix: " 分",
+      better: "higher",
+      achievements: scoreAchievements(512, 1500),
+    },
+    "fruit-slice": {
+      key: "codex-fruit-slice-best",
+      label: "最佳",
+      suffix: " 分",
+      better: "higher",
+      achievements: scoreAchievements(120, 320),
+    },
+    "pop-blocks": {
+      key: "codex-pop-blocks-best",
+      label: "最佳",
+      suffix: " 分",
+      better: "higher",
+      achievements: scoreAchievements(800, 1800),
+    },
     nsshaft: {
       key: "game-hub-nsshaft-best",
       label: "最佳",

@@ -63,6 +63,33 @@ const games = [
     theme: "linear-gradient(135deg, #07111f, #22c55e)"
   },
   {
+    id: "watermelon",
+    name: "合成大西瓜",
+    path: "./games/watermelon/index.html",
+    description: "拖动落点放下水果，相同水果碰撞后合成更大的水果。",
+    tags: ["合成", "移动端"],
+    art: "瓜",
+    theme: "linear-gradient(135deg, #16a34a, #ef4444)"
+  },
+  {
+    id: "fruit-slice",
+    name: "切水果",
+    path: "./games/fruit-slice/index.html",
+    description: "滑动切开飞出的水果，避开炸弹并保持连击。",
+    tags: ["反应", "滑动"],
+    art: "切",
+    theme: "linear-gradient(135deg, #f97316, #22c55e)"
+  },
+  {
+    id: "pop-blocks",
+    name: "方块消消乐",
+    path: "./games/pop-blocks/index.html",
+    description: "点击相连同色方块完成消除，连块越多得分越高。",
+    tags: ["消除", "点按"],
+    art: "消",
+    theme: "linear-gradient(135deg, #4f46e5, #06b6d4)"
+  },
+  {
     id: "nsshaft",
     name: "下一百层",
     path: "./games/nsshaft/index.html",
@@ -102,7 +129,7 @@ const games = [
 
 const app = document.querySelector("#app");
 const navLinks = [...document.querySelectorAll("[data-route-link]")];
-const gamePageTrackedLaunches = new Set(["brick", "nsshaft"]);
+const gamePageTrackedLaunches = new Set(["brick", "nsshaft", "watermelon", "fruit-slice", "pop-blocks"]);
 const FAVORITE_STORE_KEY = "game-hub-favorites-v1";
 const libraryFilters = {
   query: "",
