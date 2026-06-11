@@ -104,6 +104,11 @@ const app = document.querySelector("#app");
 const navLinks = [...document.querySelectorAll("[data-route-link]")];
 const gamePageTrackedLaunches = new Set(["brick", "nsshaft"]);
 const FAVORITE_STORE_KEY = "game-hub-favorites-v1";
+const libraryFilters = {
+  query: "",
+  status: "all",
+  sort: "default",
+};
 const DAILY_CHALLENGE_POOL = [
   { gameId: "2048", target: 512, label: "达到 512 分", unit: "分" },
   { gameId: "snake", target: 100, label: "达到 100 分", unit: "分" },
@@ -175,6 +180,14 @@ function getFavoriteGames() {
   return readFavoriteIds()
     .map((id) => games.find((game) => game.id === id))
     .filter(Boolean);
+}
+
+function escapeAttribute(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
 }
 
 function getRecentGames(limit = 4) {
@@ -473,6 +486,100 @@ function renderAchievementGoalsSection(goals, progressSummary) {
   `;
 }
 
+function getAchievementRatio(progress) {
+  if (!progress.totalAchievements) return 0;
+  return progress.unlockedAchievements / progress.totalAchievements;
+}
+
+function getLibrarySearchText(game) {
+  return [game.name, game.description, game.art, ...game.tags].join(" ").toLowerCase();
+}
+
+function matchesLibraryStatus(game, progress) {
+  if (libraryFilters.status === "favorite") return isFavorite(game.id);
+  if (libraryFilters.status === "started") return progress.hasBest || progress.plays > 0;
+  if (libraryFilters.status === "unplayed") return !progress.hasBest && !progress.plays;
+  return true;
+}
+
+function getLibraryItems() {
+  const query = libraryFilters.query.trim().toLowerCase();
+  const items = games
+    .map((game, index) => ({ game, progress: getProgress(game), index }))
+    .filter((item) => {
+      if (query && !getLibrarySearchText(item.game).includes(query)) return false;
+      return matchesLibraryStatus(item.game, item.progress);
+    });
+
+  return items.sort((first, second) => {
+    if (libraryFilters.sort === "recent") {
+      const firstTime = Date.parse(first.progress.lastPlayed || "") || 0;
+      const secondTime = Date.parse(second.progress.lastPlayed || "") || 0;
+      return secondTime - firstTime || first.index - second.index;
+    }
+    if (libraryFilters.sort === "plays") {
+      return second.progress.plays - first.progress.plays || first.index - second.index;
+    }
+    if (libraryFilters.sort === "achievements") {
+      return getAchievementRatio(second.progress) - getAchievementRatio(first.progress) || first.index - second.index;
+    }
+    if (libraryFilters.sort === "name") {
+      return first.game.name.localeCompare(second.game.name, "zh-CN") || first.index - second.index;
+    }
+    return first.index - second.index;
+  });
+}
+
+function libraryStatusButton(value, label) {
+  const active = libraryFilters.status === value;
+  return `
+    <button
+      class="filter-button ${active ? "is-active" : ""}"
+      type="button"
+      data-library-status="${value}"
+      aria-pressed="${active ? "true" : "false"}"
+    >${label}</button>
+  `;
+}
+
+function librarySortOption(value, label) {
+  const selected = libraryFilters.sort === value ? " selected" : "";
+  return `<option value="${value}"${selected}>${label}</option>`;
+}
+
+function renderLibraryTools(resultCount) {
+  return `
+    <section class="library-tools" aria-label="游戏库筛选">
+      <label class="library-search">
+        <span>搜索</span>
+        <input
+          type="search"
+          value="${escapeAttribute(libraryFilters.query)}"
+          placeholder="搜索游戏、标签或玩法"
+          data-library-query
+        />
+      </label>
+      <div class="library-filters" aria-label="进度筛选">
+        ${libraryStatusButton("all", "全部")}
+        ${libraryStatusButton("started", "有进度")}
+        ${libraryStatusButton("unplayed", "未开始")}
+        ${libraryStatusButton("favorite", "已收藏")}
+      </div>
+      <label class="library-sort">
+        <span>排序</span>
+        <select data-library-sort>
+          ${librarySortOption("default", "默认排序")}
+          ${librarySortOption("recent", "最近游玩")}
+          ${librarySortOption("plays", "游玩次数")}
+          ${librarySortOption("achievements", "成就进度")}
+          ${librarySortOption("name", "名称排序")}
+        </select>
+      </label>
+      <span class="library-count">${resultCount} 款匹配</span>
+    </section>
+  `;
+}
+
 function renderHome() {
   const progress = getProgressSummary();
   const recentGames = getRecentGames();
@@ -537,15 +644,21 @@ function renderHome() {
 }
 
 function renderLibrary() {
+  const libraryItems = getLibraryItems();
   app.innerHTML = `
     <section class="dashboard">
       <div class="section-head">
         <h2>游戏库</h2>
         <span>${games.length} 款游戏</span>
       </div>
-      <section class="game-grid" aria-label="游戏库">
-        ${games.map(gameCard).join("")}
-      </section>
+      ${renderLibraryTools(libraryItems.length)}
+      ${
+        libraryItems.length
+          ? `<section class="game-grid" aria-label="游戏库">
+              ${libraryItems.map((item) => gameCard(item.game)).join("")}
+            </section>`
+          : `<div class="empty-strip">没有找到匹配的游戏，换个关键词或筛选条件再试。</div>`
+      }
     </section>
   `;
 }
@@ -654,6 +767,13 @@ app.addEventListener("click", (event) => {
   const target = event.target;
   if (!(target instanceof Element)) return;
 
+  const statusButton = target.closest("[data-library-status]");
+  if (statusButton) {
+    libraryFilters.status = statusButton.dataset.libraryStatus || "all";
+    renderLibrary();
+    return;
+  }
+
   const favoriteButton = target.closest("[data-favorite-toggle]");
   if (favoriteButton) {
     const gameId = favoriteButton.dataset.favoriteToggle;
@@ -668,6 +788,26 @@ app.addEventListener("click", (event) => {
   const gameId = startLink.dataset.gameStart;
   if (gamePageTrackedLaunches.has(gameId)) return;
   window.GameHubProgress.recordLaunch(gameId);
+});
+
+app.addEventListener("input", (event) => {
+  const target = event.target;
+  if (!(target instanceof Element) || !target.matches("[data-library-query]")) return;
+  libraryFilters.query = target.value || "";
+  const cursor = target.selectionStart || libraryFilters.query.length;
+  renderLibrary();
+  const nextInput = app.querySelector("[data-library-query]");
+  if (nextInput) {
+    nextInput.focus();
+    nextInput.setSelectionRange(cursor, cursor);
+  }
+});
+
+app.addEventListener("change", (event) => {
+  const target = event.target;
+  if (!(target instanceof Element) || !target.matches("[data-library-sort]")) return;
+  libraryFilters.sort = target.value || "default";
+  renderLibrary();
 });
 
 window.addEventListener("hashchange", route);

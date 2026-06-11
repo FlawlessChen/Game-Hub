@@ -332,6 +332,87 @@ a {
   border-top: 1px solid var(--line);
 }
 
+.library-tools {
+  display: grid;
+  grid-template-columns: minmax(14rem, 1fr) auto minmax(10rem, auto) auto;
+  gap: 0.75rem;
+  align-items: end;
+  padding: 0.9rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 24px rgba(23, 32, 51, 0.07);
+}
+
+.library-search,
+.library-sort {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.library-search span,
+.library-sort span {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+.library-search input,
+.library-sort select {
+  width: 100%;
+  min-height: 2.35rem;
+  padding: 0 0.75rem;
+  color: var(--text);
+  background: #f7f9fc;
+  border: 1px solid var(--line);
+  border-radius: 0.4rem;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.library-search input:focus,
+.library-sort select:focus {
+  outline: 2px solid rgba(35, 100, 216, 0.18);
+  border-color: rgba(35, 100, 216, 0.55);
+}
+
+.library-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.filter-button {
+  min-height: 2.35rem;
+  padding: 0 0.72rem;
+  color: var(--muted);
+  background: #f2f5f9;
+  border: 1px solid var(--line);
+  border-radius: 0.4rem;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.filter-button.is-active {
+  color: #ffffff;
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.library-count {
+  align-self: center;
+  justify-self: end;
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
 .daily-section {
   display: grid;
   gap: 0.85rem;
@@ -890,6 +971,19 @@ a {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .library-tools {
+    grid-template-columns: 1fr 1fr;
+    align-items: stretch;
+  }
+
+  .library-search {
+    grid-column: 1 / -1;
+  }
+
+  .library-count {
+    justify-self: start;
+  }
+
   .summary h1 {
     font-size: 3rem;
   }
@@ -959,6 +1053,19 @@ a {
 
   .goal-grid {
     grid-template-columns: 1fr;
+  }
+
+  .library-tools {
+    grid-template-columns: 1fr;
+  }
+
+  .library-filters {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .filter-button {
+    width: 100%;
   }
 
   .section-head {
