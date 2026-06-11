@@ -90,6 +90,33 @@ const games = [
     theme: "linear-gradient(135deg, #4f46e5, #06b6d4)"
   },
   {
+    id: "jump",
+    name: "跳一跳",
+    path: "./games/jump/index.html",
+    description: "长按蓄力并松手起跳，精准落到下一个平台。",
+    tags: ["蓄力", "移动端"],
+    art: "跳",
+    theme: "linear-gradient(135deg, #2563eb, #16a34a)"
+  },
+  {
+    id: "dodge",
+    name: "躲避小球",
+    path: "./games/dodge/index.html",
+    description: "拖动角色躲避从四周飞来的危险小球，坚持越久分数越高。",
+    tags: ["躲避", "拖动"],
+    art: "躲",
+    theme: "linear-gradient(135deg, #0ea5e9, #dc2626)"
+  },
+  {
+    id: "coin-catch",
+    name: "接金币",
+    path: "./games/coin-catch/index.html",
+    description: "拖动篮子接住金币和宝石，避开掉落的石头。",
+    tags: ["接物", "拖动"],
+    art: "金",
+    theme: "linear-gradient(135deg, #d97706, #facc15)"
+  },
+  {
     id: "nsshaft",
     name: "下一百层",
     path: "./games/nsshaft/index.html",
@@ -129,7 +156,16 @@ const games = [
 
 const app = document.querySelector("#app");
 const navLinks = [...document.querySelectorAll("[data-route-link]")];
-const gamePageTrackedLaunches = new Set(["brick", "nsshaft", "watermelon", "fruit-slice", "pop-blocks"]);
+const gamePageTrackedLaunches = new Set([
+  "brick",
+  "nsshaft",
+  "watermelon",
+  "fruit-slice",
+  "pop-blocks",
+  "jump",
+  "dodge",
+  "coin-catch",
+]);
 const FAVORITE_STORE_KEY = "game-hub-favorites-v1";
 const libraryFilters = {
   query: "",

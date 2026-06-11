@@ -76,6 +76,27 @@
       better: "higher",
       achievements: scoreAchievements(800, 1800),
     },
+    jump: {
+      key: "codex-jump-best",
+      label: "最佳",
+      suffix: " 分",
+      better: "higher",
+      achievements: scoreAchievements(20, 50),
+    },
+    dodge: {
+      key: "codex-dodge-best",
+      label: "最佳",
+      suffix: " 分",
+      better: "higher",
+      achievements: scoreAchievements(80, 180),
+    },
+    "coin-catch": {
+      key: "codex-coin-catch-best",
+      label: "最佳",
+      suffix: " 分",
+      better: "higher",
+      achievements: scoreAchievements(200, 520),
+    },
     nsshaft: {
       key: "game-hub-nsshaft-best",
       label: "最佳",
