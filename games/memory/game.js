@@ -39,6 +39,10 @@ function readBestMoves() {
 }
 
 function saveBestMoves(moves) {
+  if (window.GameHubProgress) {
+    window.GameHubProgress.recordBest("memory", moves);
+  }
+
   try {
     localStorage.setItem(STORAGE_KEY, String(moves));
   } catch (error) {
@@ -93,7 +97,7 @@ function resetGame() {
   state.elapsed = 0;
   state.bestMoves = readBestMoves();
 
-  showOverlay("记忆翻牌", "Ready", "开始");
+  showOverlay("记忆翻牌", "准备开始", "开始");
   render();
 }
 
@@ -137,7 +141,7 @@ function finishGame() {
     saveBestMoves(state.bestMoves);
   }
 
-  showOverlay("完成", `${state.moves} moves`, "再来");
+  showOverlay("完成", `${state.moves} 步`, "再来");
   render();
 }
 
@@ -218,9 +222,9 @@ function accuracy() {
 
 function statusText() {
   const labelsByStatus = {
-    ready: "Ready",
-    running: "Running",
-    finished: "Finished"
+    ready: "准备开始",
+    running: "进行中",
+    finished: "已完成"
   };
 
   return labelsByStatus[state.status];
@@ -260,7 +264,7 @@ function renderCard(card) {
   const disabled = state.locked || card.matched || card.flipped ? "disabled" : "";
 
   return `
-    <button class="${classes}" type="button" data-card-id="${card.id}" aria-label="card" ${disabled}>
+    <button class="${classes}" type="button" data-card-id="${card.id}" aria-label="记忆卡片" ${disabled}>
       <span class="card-inner">
         <span class="card-face card-back"></span>
         <span class="card-face card-front">
@@ -296,5 +300,9 @@ shuffleButton.addEventListener("click", () => {
   resetGame();
   startGame();
 });
+
+if (window.GameHubProgress) {
+  window.GameHubProgress.registerGamePage("memory");
+}
 
 resetGame();

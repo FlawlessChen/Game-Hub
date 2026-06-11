@@ -103,6 +103,10 @@ function readBestScore() {
 }
 
 function saveBestScore(score) {
+  if (window.GameHubProgress) {
+    window.GameHubProgress.recordBest("flappy", score);
+  }
+
   try {
     localStorage.setItem(STORAGE_KEY, String(score));
   } catch (error) {
@@ -160,7 +164,7 @@ function resetGame() {
   state.spawnTimer = 0.75;
   state.groundOffset = 0;
 
-  showOverlay("飞翔的小鸟", "Ready", "开始");
+  showOverlay("飞翔的小鸟", "准备开始", "开始");
   render();
 }
 
@@ -189,7 +193,7 @@ function pauseGame() {
 
   state.status = "paused";
   stopLoop();
-  showOverlay("Paused", "Score " + state.score, "继续");
+  showOverlay("已暂停", "得分 " + state.score, "继续");
   renderStats();
 }
 
@@ -214,7 +218,7 @@ function gameOver() {
   stopLoop();
   updateBestScore();
   burst(state.player.x, state.player.y, currentSkin().accent, 18);
-  showOverlay("Game Over", "Score " + state.score, "重开");
+  showOverlay("游戏结束", "得分 " + state.score, "重开");
   render();
 }
 
@@ -427,10 +431,10 @@ function hideOverlay() {
 
 function statusText() {
   const labels = {
-    ready: "Ready",
-    running: "Running",
-    paused: "Paused",
-    gameover: "Game Over"
+    ready: "准备开始",
+    running: "进行中",
+    paused: "已暂停",
+    gameover: "游戏结束"
   };
 
   return labels[state.status];
@@ -695,5 +699,9 @@ document.addEventListener("visibilitychange", () => {
     pauseGame();
   }
 });
+
+if (window.GameHubProgress) {
+  window.GameHubProgress.registerGamePage("flappy");
+}
 
 resetGame();

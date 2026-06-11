@@ -711,11 +711,19 @@ function readBestScore() {
 }
 
 function writeBestScore(score) {
+  if (window.GameHubProgress) {
+    window.GameHubProgress.recordBest("tetris", score);
+  }
+
   try {
     localStorage.setItem(STORAGE_KEY, String(score));
   } catch {
     // Persistence is optional; gameplay should continue without it.
   }
+}
+
+if (window.GameHubProgress) {
+  window.GameHubProgress.registerGamePage("tetris");
 }
 
 new GameEngine();

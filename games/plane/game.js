@@ -60,6 +60,10 @@ function readBestScore() {
 }
 
 function saveBestScore(score) {
+  if (window.GameHubProgress) {
+    window.GameHubProgress.recordBest("plane", score);
+  }
+
   try {
     localStorage.setItem(STORAGE_KEY, String(score));
   } catch (error) {
@@ -93,7 +97,7 @@ function resetGame() {
   state.fireTimer = 0;
   state.keys = { up: false, down: false, left: false, right: false };
 
-  showOverlay("飞机大战", "Ready", "开始");
+  showOverlay("飞机大战", "准备开始", "开始");
   render();
 }
 
@@ -120,7 +124,7 @@ function pauseGame() {
 
   state.status = "paused";
   stopLoop();
-  showOverlay("Paused", "Score " + state.score, "继续");
+  showOverlay("已暂停", "得分 " + state.score, "继续");
   renderStats();
 }
 
@@ -140,7 +144,7 @@ function gameOver() {
   state.status = "gameover";
   stopLoop();
   updateBestScore();
-  showOverlay("Game Over", "Score " + state.score, "重开");
+  showOverlay("游戏结束", "得分 " + state.score, "重开");
   render();
 }
 
@@ -535,10 +539,10 @@ function hideOverlay() {
 
 function statusText() {
   const labels = {
-    ready: "Ready",
-    running: "Running",
-    paused: "Paused",
-    gameover: "Game Over"
+    ready: "准备开始",
+    running: "进行中",
+    paused: "已暂停",
+    gameover: "游戏结束"
   };
 
   return labels[state.status];
@@ -911,5 +915,9 @@ document.addEventListener("visibilitychange", () => {
     pauseGame();
   }
 });
+
+if (window.GameHubProgress) {
+  window.GameHubProgress.registerGamePage("plane");
+}
 
 resetGame();

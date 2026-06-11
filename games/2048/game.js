@@ -40,6 +40,10 @@ function readBestScore() {
 }
 
 function saveBestScore(score) {
+  if (window.GameHubProgress) {
+    window.GameHubProgress.recordBest("2048", score);
+  }
+
   try {
     localStorage.setItem(STORAGE_KEY, String(score));
   } catch (error) {
@@ -372,5 +376,9 @@ controlButtons.forEach((button) => {
 window.addEventListener("keydown", handleKeydown);
 boardEl.addEventListener("touchstart", handleTouchStart, { passive: true });
 boardEl.addEventListener("touchend", handleTouchEnd);
+
+if (window.GameHubProgress) {
+  window.GameHubProgress.registerGamePage("2048");
+}
 
 startGame();

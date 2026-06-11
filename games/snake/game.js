@@ -1,9 +1,9 @@
 const GRID_SIZE = 20;
 const STORAGE_KEY = "game-hub-snake-best";
 const SPEEDS = {
-  slow: { label: "Slow", delay: 150 },
-  normal: { label: "Normal", delay: 110 },
-  fast: { label: "Fast", delay: 78 }
+  slow: { label: "慢速", delay: 150 },
+  normal: { label: "普通", delay: 110 },
+  fast: { label: "快速", delay: 78 }
 };
 
 const canvas = document.querySelector("#game");
@@ -46,6 +46,10 @@ function readBestScore() {
 }
 
 function saveBestScore(score) {
+  if (window.GameHubProgress) {
+    window.GameHubProgress.recordBest("snake", score);
+  }
+
   try {
     localStorage.setItem(STORAGE_KEY, String(score));
   } catch (error) {
@@ -141,7 +145,7 @@ function resetGame() {
   state.status = "ready";
   state.bestScore = readBestScore();
 
-  showOverlay("Snake", "Ready", "开始");
+  showOverlay("贪吃蛇", "准备开始", "开始");
   render();
 }
 
@@ -167,7 +171,7 @@ function pause() {
 
   state.status = "paused";
   stopTimer();
-  showOverlay("Paused", "Score " + state.score, "继续");
+  showOverlay("已暂停", "得分 " + state.score, "继续");
   render();
 }
 
@@ -186,7 +190,7 @@ function gameOver() {
   state.status = "gameover";
   stopTimer();
   updateBestScore();
-  showOverlay("Game Over", "Score " + state.score, "重开");
+  showOverlay("游戏结束", "得分 " + state.score, "重开");
   render();
 }
 
@@ -259,10 +263,10 @@ function hideOverlay() {
 
 function statusText() {
   const labels = {
-    ready: "Ready",
-    running: "Running",
-    paused: "Paused",
-    gameover: "Game Over"
+    ready: "准备开始",
+    running: "进行中",
+    paused: "已暂停",
+    gameover: "游戏结束"
   };
 
   return labels[state.status];
@@ -514,5 +518,9 @@ window.addEventListener("keydown", handleKeydown);
 window.addEventListener("resize", render);
 canvas.addEventListener("touchstart", handleTouchStart, { passive: true });
 canvas.addEventListener("touchend", handleTouchEnd);
+
+if (window.GameHubProgress) {
+  window.GameHubProgress.registerGamePage("snake");
+}
 
 resetGame();

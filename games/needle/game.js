@@ -120,7 +120,7 @@ function endGame() {
   state.gameOver = true;
   state.best = Math.max(state.best, state.score);
   writeBest(state.best);
-  gameStatus.textContent = "Game Over";
+  gameStatus.textContent = "游戏结束";
   gameOverPanel.hidden = false;
 }
 
@@ -163,7 +163,7 @@ function drawScore() {
   ctx.fillStyle = "#687385";
   ctx.font = "700 13px Inter, Segoe UI, Arial";
   ctx.textAlign = "right";
-  ctx.fillText(`Best ${state.best}`, LOGICAL_WIDTH - 26, 34);
+  ctx.fillText(`最佳 ${state.best}`, LOGICAL_WIDTH - 26, 34);
 }
 
 function drawBall() {
@@ -349,10 +349,14 @@ function readBest() {
 }
 
 function writeBest(score) {
+  if (window.GameHubProgress) {
+    window.GameHubProgress.recordBest("needle", score);
+  }
+
   try {
     localStorage.setItem(STORAGE_KEY, String(score));
   } catch {
-    // Best score persistence is optional.
+    // 最佳分数持久化失败不影响游戏流程。
   }
 }
 
@@ -377,6 +381,10 @@ document.addEventListener("keydown", (event) => {
 restartButton.addEventListener("click", resetGame);
 overlayRestartButton.addEventListener("click", resetGame);
 window.addEventListener("resize", resizeCanvas);
+
+if (window.GameHubProgress) {
+  window.GameHubProgress.registerGamePage("needle");
+}
 
 resizeCanvas();
 resetGame();

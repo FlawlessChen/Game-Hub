@@ -264,7 +264,7 @@ function endGame() {
   updateBestScore();
   finalScore.textContent = String(state.score);
   gameOverPanel.hidden = false;
-  gameStatus.textContent = "Game Over";
+  gameStatus.textContent = "游戏结束";
 }
 
 function updateStatus() {
@@ -427,8 +427,8 @@ function drawTouchZones() {
   ctx.font = "900 18px Inter, Segoe UI, Arial";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText("LEFT", WIDTH * 0.25, HEIGHT - 38);
-  ctx.fillText("RIGHT", WIDTH * 0.75, HEIGHT - 38);
+  ctx.fillText("左移", WIDTH * 0.25, HEIGHT - 38);
+  ctx.fillText("右移", WIDTH * 0.75, HEIGHT - 38);
   ctx.restore();
 }
 
@@ -486,7 +486,7 @@ function saveBestScore(score) {
   try {
     localStorage.setItem(STORAGE_KEY, String(score));
   } catch {
-    // Best score persistence is optional.
+    // 最佳分数持久化失败不影响游戏流程。
   }
 }
 

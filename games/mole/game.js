@@ -44,6 +44,10 @@ function readBestScore() {
 }
 
 function saveBestScore(score) {
+  if (window.GameHubProgress) {
+    window.GameHubProgress.recordBest("mole", score);
+  }
+
   try {
     localStorage.setItem(STORAGE_KEY, String(score));
   } catch (error) {
@@ -84,7 +88,7 @@ function resetGame() {
   state.hitEffects.clear();
   state.missEffects.clear();
 
-  showOverlay("打地鼠", "Ready", "开始");
+  showOverlay("打地鼠", "准备开始", "开始");
   render();
 }
 
@@ -130,7 +134,7 @@ function pauseGame() {
   state.pausedAt = performance.now();
   state.pausedRemaining = Math.max(0, state.endsAt - state.pausedAt);
   stopLoop();
-  showOverlay("Paused", "Score " + state.score, "继续");
+  showOverlay("已暂停", "得分 " + state.score, "继续");
   render();
 }
 
@@ -144,7 +148,7 @@ function finishGame() {
   state.activeTargets = [];
   stopLoop();
   updateBestScore();
-  showOverlay("完成", "Score " + state.score, "再来");
+  showOverlay("完成", "得分 " + state.score, "再来");
   render();
 }
 
@@ -281,10 +285,10 @@ function updateBestScore() {
 
 function statusText() {
   const labels = {
-    ready: "Ready",
-    running: "Running",
-    paused: "Paused",
-    finished: "Finished"
+    ready: "准备开始",
+    running: "进行中",
+    paused: "已暂停",
+    finished: "已完成"
   };
 
   return labels[state.status];
@@ -334,7 +338,7 @@ function render() {
 function createBoard() {
   boardEl.innerHTML = Array.from({ length: HOLE_COUNT }, (_, index) => {
     return `
-      <button class="hole" type="button" data-hole="${index}" aria-label="hole ${index + 1}">
+      <button class="hole" type="button" data-hole="${index}" aria-label="洞口 ${index + 1}">
         <span class="mole" aria-hidden="true">
           <span class="mole-body">
             <span class="mole-face"></span>
@@ -397,4 +401,7 @@ document.addEventListener("visibilitychange", () => {
 });
 
 createBoard();
+if (window.GameHubProgress) {
+  window.GameHubProgress.registerGamePage("mole");
+}
 resetGame();

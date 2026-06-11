@@ -204,7 +204,7 @@ function endGame() {
     writeBest(state.best);
   }
   finalScore.textContent = String(state.score);
-  gameStatus.textContent = "Game Over";
+  gameStatus.textContent = "游戏结束";
   gameOverPanel.hidden = false;
   updateHud();
 }
@@ -425,10 +425,14 @@ function readBest() {
 }
 
 function writeBest(score) {
+  if (window.GameHubProgress) {
+    window.GameHubProgress.recordBest("tower", score);
+  }
+
   try {
     localStorage.setItem(STORAGE_KEY, String(score));
   } catch {
-    // Best score persistence is optional.
+    // 最佳分数持久化失败不影响游戏流程。
   }
 }
 
@@ -453,6 +457,10 @@ document.addEventListener("keydown", (event) => {
 restartButton.addEventListener("click", resetGame);
 overlayRestartButton.addEventListener("click", resetGame);
 window.addEventListener("resize", resizeCanvas);
+
+if (window.GameHubProgress) {
+  window.GameHubProgress.registerGamePage("tower");
+}
 
 resetGame();
 resizeCanvas();

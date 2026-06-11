@@ -4,17 +4,17 @@ const games = [
     name: "2048",
     path: "./games/2048/index.html",
     description: "合并数字方块，冲刺更高分数。",
-    tags: ["Puzzle", "Solo"],
+    tags: ["益智", "单人"],
     art: "2048",
     theme: "linear-gradient(135deg, #2364d8, #17a2a4)"
   },
   {
     id: "snake",
-    name: "Snake",
+    name: "贪吃蛇",
     path: "./games/snake/index.html",
     description: "控制路线、吃掉目标、避开边界。",
-    tags: ["Arcade", "Score"],
-    art: "SNK",
+    tags: ["街机", "分数"],
+    art: "蛇",
     theme: "linear-gradient(135deg, #168a5c, #4e8d22)"
   },
   {
@@ -22,8 +22,8 @@ const games = [
     name: "飞机大战",
     path: "./games/plane/index.html",
     description: "驾驶战机，躲避敌机并击落来袭目标。",
-    tags: ["Shooter", "Action"],
-    art: "AIR",
+    tags: ["射击", "动作"],
+    art: "机",
     theme: "linear-gradient(135deg, #2364d8, #17a2a4)"
   },
   {
@@ -31,8 +31,8 @@ const games = [
     name: "飞翔的小鸟",
     path: "./games/flappy/index.html",
     description: "穿过连续水管，冲刺更高分数。",
-    tags: ["Timing", "Arcade"],
-    art: "FLY",
+    tags: ["时机", "街机"],
+    art: "鸟",
     theme: "linear-gradient(135deg, #ba6b12, #d64d3f)"
   },
   {
@@ -40,8 +40,8 @@ const games = [
     name: "记忆翻牌",
     path: "./games/memory/index.html",
     description: "短时记忆配对挑战。",
-    tags: ["Memory", "Cards"],
-    art: "MEM",
+    tags: ["记忆", "卡牌"],
+    art: "记",
     theme: "linear-gradient(135deg, #6a55ca, #2364d8)"
   },
   {
@@ -49,8 +49,8 @@ const games = [
     name: "打地鼠",
     path: "./games/mole/index.html",
     description: "快速反应，击中出现的目标。",
-    tags: ["Reaction", "Timer"],
-    art: "MOL",
+    tags: ["反应", "限时"],
+    art: "鼠",
     theme: "linear-gradient(135deg, #c43d3d, #ba6b12)"
   },
   {
@@ -58,8 +58,8 @@ const games = [
     name: "打砖块",
     path: "./games/brick/index.html",
     description: "用挡板反弹小球，击碎彩色砖块并接住道具。",
-    tags: ["Arcade", "Canvas"],
-    art: "BRK",
+    tags: ["街机", "画布"],
+    art: "砖",
     theme: "linear-gradient(135deg, #07111f, #22c55e)"
   },
   {
@@ -67,8 +67,8 @@ const games = [
     name: "下一百层",
     path: "./games/nsshaft/index.html",
     description: "控制小方块踩平台下行，避开顶部钉子和地刺。",
-    tags: ["Arcade", "Mobile"],
-    art: "NS",
+    tags: ["街机", "移动端"],
+    art: "层",
     theme: "linear-gradient(135deg, #0a1020, #38bdf8)"
   },
   {
@@ -76,8 +76,8 @@ const games = [
     name: "见缝插针",
     path: "./games/needle/index.html",
     description: "把编号小针插进旋转大球，避开已有针脚。",
-    tags: ["Timing", "Canvas"],
-    art: "PIN",
+    tags: ["时机", "画布"],
+    art: "针",
     theme: "linear-gradient(135deg, #2563eb, #dc2626)"
   },
   {
@@ -85,8 +85,8 @@ const games = [
     name: "建楼大师",
     path: "./games/tower/index.html",
     description: "放下摆动楼层，裁掉偏差，向上叠出更高楼。",
-    tags: ["Timing", "Stack"],
-    art: "BLD",
+    tags: ["时机", "堆叠"],
+    art: "楼",
     theme: "linear-gradient(135deg, #0f766e, #d97706)"
   },
   {
@@ -94,8 +94,8 @@ const games = [
     name: "俄罗斯方块",
     path: "./games/tetris/index.html",
     description: "旋转下落的方块，消除整行得分。",
-    tags: ["Puzzle", "Arcade"],
-    art: "TET",
+    tags: ["益智", "街机"],
+    art: "方",
     theme: "linear-gradient(135deg, #6a55ca, #34c5d6)"
   }
 ];
@@ -107,7 +107,7 @@ const gamePageTrackedLaunches = new Set(["brick", "nsshaft"]);
 function getProgress(game) {
   if (!window.GameHubProgress) {
     return {
-      bestText: "No record",
+      bestText: "暂无记录",
       hasBest: false,
       plays: 0,
       achievements: [],
@@ -126,11 +126,11 @@ function getProgressSummary() {
 }
 
 function formatPlays(plays) {
-  return plays > 0 ? `${plays} launches` : "Not started";
+  return plays > 0 ? `${plays} 次启动` : "未开始";
 }
 
 function formatAchievementCount(progress) {
-  return `${progress.unlockedAchievements}/${progress.totalAchievements} badges`;
+  return `${progress.unlockedAchievements}/${progress.totalAchievements} 个成就`;
 }
 
 function achievementBadges(progress) {
@@ -168,7 +168,7 @@ function gameCard(game) {
         </div>
       </div>
       <div class="game-action">
-        <span class="status">${progress.hasBest ? "Recorded" : "Ready"}</span>
+        <span class="status">${progress.hasBest ? "已记录" : "待挑战"}</span>
         <a class="button" href="#/game/${game.id}">进入</a>
       </div>
     </article>
@@ -181,32 +181,32 @@ function renderHome() {
     <section class="dashboard">
       <div class="summary">
         <div>
-          <h1>Game Hub</h1>
+          <h1>游戏中心</h1>
           <p>${games.map((game) => game.name).join("、")}</p>
         </div>
         <div class="stats" aria-label="游戏概览">
           <div class="stat">
             <strong>${games.length}</strong>
-            <span>Games</span>
+            <span>游戏数</span>
           </div>
           <div class="stat">
             <strong>${progress.recordedGames}</strong>
-            <span>Records</span>
+            <span>有记录</span>
           </div>
           <div class="stat">
             <strong>${progress.unlockedAchievements}/${progress.totalAchievements}</strong>
-            <span>Badges</span>
+            <span>成就</span>
           </div>
           <div class="stat">
             <strong>${progress.totalPlays}</strong>
-            <span>Launches</span>
+            <span>启动次数</span>
           </div>
         </div>
       </div>
 
       <div class="section-head">
         <h2>推荐游戏</h2>
-        <span>${games.length} items</span>
+        <span>${games.length} 款游戏</span>
       </div>
 
       <section class="game-grid" aria-label="推荐游戏">
@@ -221,7 +221,7 @@ function renderLibrary() {
     <section class="dashboard">
       <div class="section-head">
         <h2>游戏库</h2>
-        <span>${games.length} items</span>
+        <span>${games.length} 款游戏</span>
       </div>
       <section class="game-grid" aria-label="游戏库">
         ${games.map(gameCard).join("")}
@@ -255,15 +255,15 @@ function renderGame(id) {
           <div class="detail-stats" aria-label="本地进度">
             <div class="mini-stat">
               <strong>${progress.bestText}</strong>
-              <span>Local best</span>
+              <span>本地最佳</span>
             </div>
             <div class="mini-stat">
               <strong>${progress.plays}</strong>
-              <span>Launches</span>
+              <span>启动次数</span>
             </div>
             <div class="mini-stat">
               <strong>${progress.unlockedAchievements}/${progress.totalAchievements}</strong>
-              <span>Badges</span>
+              <span>成就</span>
             </div>
           </div>
           <div class="achievement-list" aria-label="成就徽章">

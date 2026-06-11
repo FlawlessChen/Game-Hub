@@ -4,78 +4,86 @@
   const definitions = {
     "2048": {
       key: "game-hub-2048-best",
-      label: "Best",
+      label: "最佳",
+      suffix: " 分",
       better: "higher",
       achievements: scoreAchievements(512, 2048),
     },
     snake: {
       key: "game-hub-snake-best",
-      label: "Best",
+      label: "最佳",
+      suffix: " 分",
       better: "higher",
       achievements: scoreAchievements(100, 300),
     },
     plane: {
       key: "game-hub-plane-best",
-      label: "Best",
+      label: "最佳",
+      suffix: " 分",
       better: "higher",
       achievements: scoreAchievements(1000, 3000),
     },
     flappy: {
       key: "game-hub-flappy-best",
-      label: "Best",
+      label: "最佳",
+      suffix: " 分",
       better: "higher",
       achievements: scoreAchievements(10, 30),
     },
     memory: {
       key: "game-hub-memory-best",
-      label: "Best",
-      suffix: " moves",
+      label: "最佳",
+      suffix: " 步",
       better: "lower",
       achievements: [
         launchAchievement(),
-        bestAchievement("Clean Pairing", "Finish in 40 moves or fewer", 40),
-        bestAchievement("Sharp Memory", "Finish in 28 moves or fewer", 28),
+        bestAchievement("精准配对", "40 步内完成一局", 40),
+        bestAchievement("记忆达人", "28 步内完成一局", 28),
       ],
     },
     mole: {
       key: "game-hub-mole-best",
-      label: "Best",
+      label: "最佳",
+      suffix: " 分",
       better: "higher",
       achievements: scoreAchievements(300, 800),
     },
     brick: {
       key: "game-hub-brick-best",
-      label: "Best",
+      label: "最佳",
+      suffix: " 分",
       better: "higher",
       achievements: scoreAchievements(200, 560),
     },
     nsshaft: {
       key: "game-hub-nsshaft-best",
-      label: "Best",
-      suffix: " floors",
+      label: "最佳",
+      suffix: " 层",
       better: "higher",
       achievements: floorAchievements(20, 50),
     },
     needle: {
       key: "codex-needle-best",
-      label: "Best",
+      label: "最佳",
+      suffix: " 根",
       better: "higher",
       achievements: [
         launchAchievement(),
-        bestAchievement("Steady Hand", "Insert 6 needles", 6),
-        bestAchievement("Full Circle", "Insert all 12 needles", 12),
+        bestAchievement("稳稳出针", "成功插入 6 根针", 6),
+        bestAchievement("圆满一圈", "成功插入全部 12 根针", 12),
       ],
     },
     tower: {
       key: "codex-tower-best",
-      label: "Best",
-      suffix: " floors",
+      label: "最佳",
+      suffix: " 层",
       better: "higher",
       achievements: floorAchievements(10, 25),
     },
     tetris: {
       key: "codex-tetris-best-score",
-      label: "Best",
+      label: "最佳",
+      suffix: " 分",
       better: "higher",
       achievements: scoreAchievements(1000, 4000),
     },
@@ -84,8 +92,8 @@
   function launchAchievement() {
     return {
       id: "first-launch",
-      name: "First Run",
-      description: "Start this game once",
+      name: "初次启动",
+      description: "进入一次游戏",
       type: "plays",
       target: 1,
     };
@@ -93,7 +101,7 @@
 
   function bestAchievement(name, description, target) {
     return {
-      id: name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
+      id: `best-${target}`,
       name,
       description,
       type: "best",
@@ -104,16 +112,16 @@
   function scoreAchievements(firstTarget, secondTarget) {
     return [
       launchAchievement(),
-      bestAchievement("Score Setter", `Reach ${firstTarget} points`, firstTarget),
-      bestAchievement("Score Chaser", `Reach ${secondTarget} points`, secondTarget),
+      bestAchievement("初露锋芒", `达到 ${firstTarget} 分`, firstTarget),
+      bestAchievement("高分追击", `达到 ${secondTarget} 分`, secondTarget),
     ];
   }
 
   function floorAchievements(firstTarget, secondTarget) {
     return [
       launchAchievement(),
-      bestAchievement("Floor Finder", `Reach ${firstTarget} floors`, firstTarget),
-      bestAchievement("Deep Runner", `Reach ${secondTarget} floors`, secondTarget),
+      bestAchievement("逐层深入", `达到 ${firstTarget} 层`, firstTarget),
+      bestAchievement("深层探索", `达到 ${secondTarget} 层`, secondTarget),
     ];
   }
 
@@ -165,7 +173,7 @@
   }
 
   function formatBest(definition, value) {
-    if (!value) return "No record";
+    if (!value) return "暂无记录";
     return `${definition.label} ${value}${definition.suffix || ""}`;
   }
 
@@ -224,7 +232,7 @@
     const toast = document.createElement("div");
     toast.className = "gamehub-achievement-toast";
     toast.innerHTML = `
-      <span>Achievement unlocked</span>
+      <span>解锁成就</span>
       <strong>${achievement.name}</strong>
       <small>${achievement.description}</small>
     `;
@@ -328,7 +336,7 @@
   }
 
   function getGameProgress(gameId) {
-    const definition = definitions[gameId] || { label: "Best", better: "higher" };
+    const definition = definitions[gameId] || { label: "最佳", better: "higher" };
     const store = readStore();
     const stored = store.games[gameId] || {};
     const legacyBest = definition.key ? readNumber(definition.key) : 0;
@@ -370,7 +378,7 @@
 
   function recordBest(gameId, value) {
     const next = Number(value || 0);
-    const definition = definitions[gameId] || { label: "Best", better: "higher" };
+    const definition = definitions[gameId] || { label: "最佳", better: "higher" };
     if (!Number.isFinite(next) || next <= 0) return false;
 
     const before = getGameProgress(gameId);

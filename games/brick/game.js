@@ -237,7 +237,7 @@ function collideWithBricks(ball) {
         state.score += brick.maxLife * 10;
         updateBestScore();
         maybeSpawnPowerUp(brick);
-        setStatus(`Score ${state.score}`);
+        setStatus(`得分 ${state.score}`);
       }
       return;
     }
@@ -337,15 +337,15 @@ function checkWin() {
 
   state.mode = "won";
   updateBestScore();
-  showOverlay("You Win!", `Score ${state.score}`);
-  setStatus("You Win!");
+  showOverlay("你赢了！", `得分 ${state.score}`);
+  setStatus("你赢了！");
 }
 
 function endGame() {
   state.mode = "over";
   updateBestScore();
-  showOverlay("Game Over", `Score ${state.score}`);
-  setStatus("Game Over");
+  showOverlay("游戏结束", `得分 ${state.score}`);
+  setStatus("游戏结束");
 }
 
 function draw() {
@@ -387,19 +387,19 @@ function drawCanvasHud() {
   ctx.font = "800 20px Inter, Segoe UI, Arial";
   ctx.textAlign = "left";
   ctx.textBaseline = "middle";
-  ctx.fillText(`Score ${state.score}`, 22, 28);
+  ctx.fillText(`得分 ${state.score}`, 22, 28);
 
   ctx.textAlign = "right";
-  ctx.fillText(`Lives ${state.lives}`, WIDTH - 22, 28);
+  ctx.fillText(`生命 ${state.lives}`, WIDTH - 22, 28);
 
   ctx.textAlign = "center";
-  ctx.fillText(`Best ${state.best}`, WIDTH / 2, 28);
+  ctx.fillText(`最佳 ${state.best}`, WIDTH / 2, 28);
 
   if (state.paddle.extendedUntil) {
     const seconds = Math.max(0, Math.ceil((state.paddle.extendedUntil - performance.now()) / 1000));
     ctx.fillStyle = "#22c55e";
     ctx.font = "800 15px Inter, Segoe UI, Arial";
-    ctx.fillText(`Extend ${seconds}s`, WIDTH - 22, 54);
+    ctx.fillText(`加长 ${seconds} 秒`, WIDTH - 22, 54);
   }
 }
 
@@ -558,7 +558,7 @@ function saveBestScore(score) {
   try {
     localStorage.setItem(STORAGE_KEY, String(score));
   } catch {
-    // Best score persistence is optional.
+    // 最佳分数持久化失败不影响游戏流程。
   }
 }
 

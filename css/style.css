@@ -559,13 +559,29 @@ a {
     padding-top: 1rem;
   }
 
+  .dashboard {
+    gap: 1rem;
+  }
+
   .summary {
     grid-template-columns: 1fr;
+    gap: 1rem;
     padding: 1rem;
   }
 
   .stats {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.6rem;
+    min-width: 0;
+  }
+
+  .stat {
+    min-height: 5.25rem;
+    padding: 0.8rem;
+  }
+
+  .stat strong {
+    font-size: 1.4rem;
   }
 
   .game-grid {
@@ -582,11 +598,22 @@ a {
   }
 
   .detail-stats {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.55rem;
   }
 
   .summary h1 {
-    font-size: 2.4rem;
+    font-size: 2.2rem;
+  }
+
+  .summary p {
+    margin-top: 0.7rem;
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+
+  .detail-panel .game-art {
+    min-height: 14rem;
   }
 
   .detail-content h1 {
@@ -605,7 +632,7 @@ a {
   }
 
   .app-shell {
-    width: min(100% - 0.75rem, 1180px);
+    width: min(100% - 1rem, 1180px);
   }
 
   .summary,
@@ -615,7 +642,15 @@ a {
   }
 
   .stat {
-    min-height: 5.5rem;
+    min-height: 4.85rem;
+  }
+
+  .summary h1 {
+    font-size: 2.05rem;
+  }
+
+  .summary p {
+    font-size: 0.9rem;
   }
 
   .game-card {
@@ -626,13 +661,16 @@ a {
     min-height: 6.75rem;
   }
 
+  .detail-panel .game-art {
+    min-height: 12rem;
+  }
+
   .game-action {
     align-items: stretch;
     flex-direction: column;
   }
 
   .game-progress,
-  .detail-stats,
   .achievement-list {
     grid-template-columns: 1fr;
   }
