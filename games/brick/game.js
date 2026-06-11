@@ -25,6 +25,7 @@ const BALL_SPEED = 6.3;
 const POWER_SIZE = 24;
 const POWER_SPEED = 2.7;
 const EXTEND_DURATION = 8000;
+const STORAGE_KEY = "game-hub-brick-best";
 
 const BRICK_COLORS = ["#ef4444", "#f97316", "#eab308", "#22c55e", "#38bdf8"];
 const POWER_TYPES = {
@@ -35,6 +36,7 @@ const POWER_TYPES = {
 const state = {
   mode: "ready",
   score: 0,
+  best: readBestScore(),
   lives: 3,
   bricks: [],
   balls: [],
@@ -53,6 +55,7 @@ const state = {
 function resetGame() {
   state.mode = "ready";
   state.score = 0;
+  state.best = readBestScore();
   state.lives = 3;
   state.bricks = createBricks();
   state.powerUps = [];
@@ -232,6 +235,7 @@ function collideWithBricks(ball) {
       if (brick.life <= 0) {
         brick.status = false;
         state.score += brick.maxLife * 10;
+        updateBestScore();
         maybeSpawnPowerUp(brick);
         setStatus(`Score ${state.score}`);
       }
@@ -332,12 +336,14 @@ function checkWin() {
   if (hasLivingBrick) return;
 
   state.mode = "won";
+  updateBestScore();
   showOverlay("You Win!", `Score ${state.score}`);
   setStatus("You Win!");
 }
 
 function endGame() {
   state.mode = "over";
+  updateBestScore();
   showOverlay("Game Over", `Score ${state.score}`);
   setStatus("Game Over");
 }
@@ -385,6 +391,9 @@ function drawCanvasHud() {
 
   ctx.textAlign = "right";
   ctx.fillText(`Lives ${state.lives}`, WIDTH - 22, 28);
+
+  ctx.textAlign = "center";
+  ctx.fillText(`Best ${state.best}`, WIDTH / 2, 28);
 
   if (state.paddle.extendedUntil) {
     const seconds = Math.max(0, Math.ceil((state.paddle.extendedUntil - performance.now()) / 1000));
@@ -527,6 +536,32 @@ function setStatus(message) {
   gameStatus.textContent = message;
 }
 
+function updateBestScore() {
+  if (state.score <= state.best) return;
+  state.best = state.score;
+  saveBestScore(state.best);
+}
+
+function readBestScore() {
+  try {
+    return Number(localStorage.getItem(STORAGE_KEY) || 0);
+  } catch {
+    return 0;
+  }
+}
+
+function saveBestScore(score) {
+  if (window.GameHubProgress) {
+    window.GameHubProgress.recordBest("brick", score);
+  }
+
+  try {
+    localStorage.setItem(STORAGE_KEY, String(score));
+  } catch {
+    // Best score persistence is optional.
+  }
+}
+
 function roundRect(context, x, y, width, height, radius) {
   const r = Math.min(radius, width / 2, height / 2);
   context.beginPath();
@@ -578,6 +613,10 @@ canvas.addEventListener("pointerdown", (event) => {
 
 restartButton.addEventListener("click", resetGame);
 overlayButton.addEventListener("click", resetGame);
+
+if (window.GameHubProgress) {
+  window.GameHubProgress.registerGamePage("brick");
+}
 
 resetGame();
 requestAnimationFrame(loop);

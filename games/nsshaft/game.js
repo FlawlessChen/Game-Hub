@@ -20,6 +20,7 @@ const PLATFORM_GAP_MAX = 126;
 const SPIKE_HEIGHT = 42;
 const START_LIVES = 3;
 const RESPAWN_INVULN = 1200;
+const STORAGE_KEY = "game-hub-nsshaft-best";
 
 const COLORS = {
   backgroundTop: "#081426",
@@ -33,6 +34,7 @@ const COLORS = {
 const state = {
   mode: "playing",
   score: 0,
+  best: readBestScore(),
   lives: START_LIVES,
   player: {
     x: WIDTH / 2 - PLAYER_SIZE / 2,
@@ -54,6 +56,7 @@ const state = {
 function resetGame() {
   state.mode = "playing";
   state.score = 0;
+  state.best = readBestScore();
   state.lives = START_LIVES;
   state.platforms = createInitialPlatforms();
   state.keys.left = false;
@@ -133,6 +136,7 @@ function movePlatforms(step) {
   for (const platform of state.platforms) {
     if (platform.y + platform.height < 0) {
       state.score += 1;
+      updateBestScore();
     } else {
       remaining.push(platform);
     }
@@ -257,6 +261,7 @@ function placePlayerOnPlatform(platform) {
 
 function endGame() {
   state.mode = "over";
+  updateBestScore();
   finalScore.textContent = String(state.score);
   gameOverPanel.hidden = false;
   gameStatus.textContent = "Game Over";
@@ -330,6 +335,9 @@ function drawHud() {
 
   ctx.textAlign = "right";
   ctx.fillText(`生命 ${state.lives}`, WIDTH - 28, 69);
+
+  ctx.textAlign = "center";
+  ctx.fillText(`最佳 ${state.best}`, WIDTH / 2, 69);
   ctx.restore();
 }
 
@@ -456,6 +464,32 @@ function randomBetween(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function updateBestScore() {
+  if (state.score <= state.best) return;
+  state.best = state.score;
+  saveBestScore(state.best);
+}
+
+function readBestScore() {
+  try {
+    return Number(localStorage.getItem(STORAGE_KEY) || 0);
+  } catch {
+    return 0;
+  }
+}
+
+function saveBestScore(score) {
+  if (window.GameHubProgress) {
+    window.GameHubProgress.recordBest("nsshaft", score);
+  }
+
+  try {
+    localStorage.setItem(STORAGE_KEY, String(score));
+  } catch {
+    // Best score persistence is optional.
+  }
+}
+
 document.addEventListener("keydown", (event) => {
   if (["ArrowLeft", "ArrowRight"].includes(event.key)) {
     event.preventDefault();
@@ -483,6 +517,10 @@ document.addEventListener("contextmenu", (event) => event.preventDefault());
 
 restartButton.addEventListener("click", resetGame);
 overlayRestartButton.addEventListener("click", resetGame);
+
+if (window.GameHubProgress) {
+  window.GameHubProgress.registerGamePage("nsshaft");
+}
 
 resetGame();
 requestAnimationFrame(loop);

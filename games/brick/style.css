@@ -17,13 +17,18 @@
 }
 
 html {
+  width: 100%;
+  max-width: 100%;
   -webkit-text-size-adjust: 100%;
 }
 
 body {
   margin: 0;
+  width: 100%;
+  max-width: 100%;
   min-height: 100vh;
   min-height: 100svh;
+  overflow-x: hidden;
   color: var(--text);
   background:
     linear-gradient(180deg, rgba(56, 189, 248, 0.1), transparent 16rem),
@@ -55,6 +60,8 @@ a {
   display: grid;
   gap: 1rem;
   width: min(100%, 58rem);
+  max-width: calc(100vw - 2rem);
+  min-width: 0;
 }
 
 .game-header {
@@ -62,12 +69,18 @@ a {
   grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 0.85rem;
   align-items: center;
+  min-width: 0;
+  max-width: 100%;
   padding: 0.85rem;
   background: rgba(17, 29, 45, 0.9);
   border: 1px solid rgba(38, 57, 79, 0.92);
   border-radius: 0.5rem;
   box-shadow: 0 14px 34px rgba(0, 0, 0, 0.22);
   backdrop-filter: blur(14px);
+}
+
+.game-header > div {
+  min-width: 0;
 }
 
 .hub-link {
@@ -88,6 +101,7 @@ a {
   font-size: 1.25rem;
   line-height: 1.1;
   letter-spacing: 0;
+  overflow-wrap: anywhere;
 }
 
 .game-header p {
@@ -95,6 +109,7 @@ a {
   color: var(--muted);
   font-size: 0.9rem;
   line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 button {
@@ -117,7 +132,8 @@ button:hover {
   display: grid;
   overflow: hidden;
   aspect-ratio: 4 / 3;
-  width: min(100%, 56rem);
+  width: min(100%, calc(100vw - 2rem), 56rem);
+  max-width: 100%;
   margin: 0 auto;
   background: #07111f;
   border: 1px solid var(--line);
@@ -174,14 +190,24 @@ canvas {
 
   .game-panel {
     width: 100%;
+    max-width: calc(100vw - 1.5rem);
   }
 
   .game-header {
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr;
   }
 
   .hub-link {
-    grid-column: 1 / -1;
+    grid-column: auto;
+    width: 100%;
+  }
+
+  .game-header button {
+    width: 100%;
+  }
+
+  .canvas-wrap {
+    width: min(100%, calc(100vw - 1.5rem));
   }
 }
 

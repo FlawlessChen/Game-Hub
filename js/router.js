@@ -102,8 +102,52 @@ const games = [
 
 const app = document.querySelector("#app");
 const navLinks = [...document.querySelectorAll("[data-route-link]")];
+const gamePageTrackedLaunches = new Set(["brick", "nsshaft"]);
+
+function getProgress(game) {
+  if (!window.GameHubProgress) {
+    return {
+      bestText: "No record",
+      hasBest: false,
+      plays: 0,
+      achievements: [],
+      unlockedAchievements: 0,
+      totalAchievements: 0,
+    };
+  }
+  return window.GameHubProgress.getGameProgress(game.id);
+}
+
+function getProgressSummary() {
+  if (!window.GameHubProgress) {
+    return { recordedGames: 0, totalPlays: 0, unlockedAchievements: 0, totalAchievements: 0 };
+  }
+  return window.GameHubProgress.getSummary(games);
+}
+
+function formatPlays(plays) {
+  return plays > 0 ? `${plays} launches` : "Not started";
+}
+
+function formatAchievementCount(progress) {
+  return `${progress.unlockedAchievements}/${progress.totalAchievements} badges`;
+}
+
+function achievementBadges(progress) {
+  return progress.achievements
+    .map(
+      (achievement) => `
+        <div class="achievement-badge ${achievement.unlocked ? "is-unlocked" : "is-locked"}">
+          <strong>${achievement.name}</strong>
+          <span>${achievement.description}</span>
+        </div>
+      `
+    )
+    .join("");
+}
 
 function gameCard(game) {
+  const progress = getProgress(game);
   return `
     <article class="game-card">
       <a class="game-art" style="--art-bg: ${game.theme}" href="#/game/${game.id}" aria-label="${game.name}">
@@ -115,9 +159,16 @@ function gameCard(game) {
         <div class="game-meta">
           ${game.tags.map((tag) => `<span class="pill">${tag}</span>`).join("")}
         </div>
+        <div class="game-progress">
+          <div>
+            <strong>${progress.bestText}</strong>
+            <span>${formatAchievementCount(progress)}</span>
+          </div>
+          <span>${formatPlays(progress.plays)}</span>
+        </div>
       </div>
       <div class="game-action">
-        <span class="status">Ready</span>
+        <span class="status">${progress.hasBest ? "Recorded" : "Ready"}</span>
         <a class="button" href="#/game/${game.id}">进入</a>
       </div>
     </article>
@@ -125,6 +176,7 @@ function gameCard(game) {
 }
 
 function renderHome() {
+  const progress = getProgressSummary();
   app.innerHTML = `
     <section class="dashboard">
       <div class="summary">
@@ -138,12 +190,16 @@ function renderHome() {
             <span>Games</span>
           </div>
           <div class="stat">
-            <strong>${games.length}</strong>
-            <span>Folders</span>
+            <strong>${progress.recordedGames}</strong>
+            <span>Records</span>
           </div>
           <div class="stat">
-            <strong>1</strong>
-            <span>Hub</span>
+            <strong>${progress.unlockedAchievements}/${progress.totalAchievements}</strong>
+            <span>Badges</span>
+          </div>
+          <div class="stat">
+            <strong>${progress.totalPlays}</strong>
+            <span>Launches</span>
           </div>
         </div>
       </div>
@@ -182,6 +238,8 @@ function renderGame(id) {
     return;
   }
 
+  const progress = getProgress(game);
+
   app.innerHTML = `
     <section class="detail">
       <article class="detail-panel">
@@ -194,8 +252,25 @@ function renderGame(id) {
           <div class="game-meta">
             ${game.tags.map((tag) => `<span class="pill">${tag}</span>`).join("")}
           </div>
+          <div class="detail-stats" aria-label="本地进度">
+            <div class="mini-stat">
+              <strong>${progress.bestText}</strong>
+              <span>Local best</span>
+            </div>
+            <div class="mini-stat">
+              <strong>${progress.plays}</strong>
+              <span>Launches</span>
+            </div>
+            <div class="mini-stat">
+              <strong>${progress.unlockedAchievements}/${progress.totalAchievements}</strong>
+              <span>Badges</span>
+            </div>
+          </div>
+          <div class="achievement-list" aria-label="成就徽章">
+            ${achievementBadges(progress)}
+          </div>
           <div class="detail-actions">
-            <a class="button" href="${game.path}">开始</a>
+            <a class="button" href="${game.path}" data-game-start="${game.id}">开始</a>
             <a class="ghost-button" href="#/">返回首页</a>
           </div>
         </div>
@@ -247,6 +322,17 @@ function route() {
   setActiveNav("");
   renderNotFound();
 }
+
+app.addEventListener("click", (event) => {
+  const target = event.target;
+  if (!(target instanceof Element)) return;
+
+  const startLink = target.closest("[data-game-start]");
+  if (!startLink || !window.GameHubProgress) return;
+  const gameId = startLink.dataset.gameStart;
+  if (gamePageTrackedLaunches.has(gameId)) return;
+  window.GameHubProgress.recordLaunch(gameId);
+});
 
 window.addEventListener("hashchange", route);
 window.addEventListener("DOMContentLoaded", route);

@@ -19,13 +19,18 @@
 }
 
 html {
+  width: 100%;
+  max-width: 100%;
   -webkit-text-size-adjust: 100%;
 }
 
 body {
   margin: 0;
+  width: 100%;
+  max-width: 100%;
   min-height: 100vh;
   min-height: 100svh;
+  overflow-x: hidden;
   color: var(--ink);
   background: linear-gradient(180deg, #fbfcff 0%, var(--page-bg) 52%, #edf3f6 100%);
   font-family:
@@ -45,6 +50,8 @@ a {
 
 .game-page {
   width: min(1120px, calc(100% - 2rem));
+  max-width: 100%;
+  min-width: 0;
   min-height: 100vh;
   min-height: 100svh;
   margin: 0 auto;
@@ -56,6 +63,7 @@ a {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+  min-width: 0;
   min-height: 4rem;
 }
 
@@ -75,6 +83,7 @@ a {
   display: flex;
   align-items: center;
   gap: 0.65rem;
+  min-width: 0;
 }
 
 .score-box,
@@ -136,11 +145,13 @@ a {
   grid-template-columns: minmax(0, 34rem) minmax(17rem, 1fr);
   gap: 1.25rem;
   align-items: start;
+  min-width: 0;
   margin-top: 1.5rem;
 }
 
 .board-section,
 .side-panel {
+  min-width: 0;
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 0.5rem;
@@ -174,6 +185,8 @@ a {
 
 .board-wrap {
   position: relative;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .mole-board {
@@ -437,7 +450,7 @@ a {
 
   .score-strip {
     display: grid;
-    grid-template-columns: 1fr 1fr auto;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
   }
 
   .score-box {
