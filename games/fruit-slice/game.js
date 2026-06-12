@@ -22,9 +22,12 @@ const FRUITS = [
   { name: "西瓜", color: "#16a34a", radius: 34, score: 22 },
 ];
 
+const sceneImage = loadImage("../../assets/scenes/fruit-slice-board.png");
 const coverImage = loadImage("../../assets/covers/fruit-slice.png");
 const fruitSprites = FRUITS.map((_, index) => loadImage(`../../assets/sprites/fruit-slice/fruit-${index}.png`));
 const bombSprite = loadImage("../../assets/sprites/fruit-slice/bomb.png");
+const juiceSplashSprite = loadImage("../../assets/effects/fruit-splash.png");
+const sliceGlintSprite = loadImage("../../assets/effects/slice-glint.png");
 
 const state = {
   items: [],
@@ -111,6 +114,7 @@ function update(step) {
     splash.x += splash.vx * step;
     splash.y += splash.vy * step;
     splash.vy += 0.08 * step;
+    splash.rotation += splash.spin * step;
     return splash.life > 0;
   });
 }
@@ -206,6 +210,9 @@ function burst(item, color, count) {
       color,
       life: 28 + Math.random() * 10,
       radius: 3 + Math.random() * 4,
+      size: 22 + Math.random() * 24,
+      rotation: Math.random() * Math.PI * 2,
+      spin: (Math.random() - 0.5) * 0.18,
     });
   }
 }
@@ -228,6 +235,10 @@ function draw() {
 }
 
 function drawBackground() {
+  if (drawSceneBackground(sceneImage)) {
+    return;
+  }
+
   const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
   gradient.addColorStop(0, "#fffaf0");
   gradient.addColorStop(0.6, "#ffedd5");
@@ -238,7 +249,7 @@ function drawBackground() {
 }
 
 function drawHudHint() {
-  ctx.fillStyle = "rgba(255, 255, 255, 0.48)";
+  ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
   roundRect(18, 18, WIDTH - 36, HEIGHT - 36, 20);
   ctx.fill();
 
@@ -319,15 +330,51 @@ function drawCoverBackground(image, alpha) {
   ctx.restore();
 }
 
+function drawSceneBackground(image) {
+  if (!isImageReady(image)) return false;
+  ctx.save();
+  drawImageCover(image, 0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "rgba(255, 250, 240, 0.08)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.restore();
+  return true;
+}
+
+function drawImageCover(image, x, y, width, height) {
+  const scale = Math.max(width / image.naturalWidth, height / image.naturalHeight);
+  const sourceWidth = width / scale;
+  const sourceHeight = height / scale;
+  const sourceX = (image.naturalWidth - sourceWidth) / 2;
+  const sourceY = (image.naturalHeight - sourceHeight) / 2;
+  ctx.drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, x, y, width, height);
+}
+
 function drawSplashes() {
+  ctx.save();
   for (const splash of state.splashes) {
-    ctx.globalAlpha = Math.max(0, splash.life / 36);
+    const alpha = Math.max(0, splash.life / 36);
+    if (isImageReady(juiceSplashSprite)) {
+      ctx.save();
+      ctx.globalAlpha = alpha * 0.72;
+      ctx.translate(splash.x, splash.y);
+      ctx.rotate(splash.rotation);
+      ctx.drawImage(
+        juiceSplashSprite,
+        -splash.size / 2,
+        -splash.size / 2,
+        splash.size,
+        splash.size
+      );
+      ctx.restore();
+    }
+
+    ctx.globalAlpha = alpha;
     ctx.fillStyle = splash.color;
     ctx.beginPath();
     ctx.arc(splash.x, splash.y, splash.radius, 0, Math.PI * 2);
     ctx.fill();
   }
-  ctx.globalAlpha = 1;
+  ctx.restore();
 }
 
 function drawCutTrail() {
@@ -345,6 +392,21 @@ function drawCutTrail() {
   ctx.strokeStyle = "rgba(249, 115, 22, 0.82)";
   ctx.lineWidth = 3;
   ctx.stroke();
+
+  if (isImageReady(sliceGlintSprite)) {
+    for (let i = 1; i < state.cuts.length; i += 3) {
+      const point = state.cuts[i];
+      const previous = state.cuts[i - 1];
+      const angle = Math.atan2(point.y - previous.y, point.x - previous.x);
+      const size = 34 + point.life * 1.5;
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, point.life / 11) * 0.75;
+      ctx.translate(point.x, point.y);
+      ctx.rotate(angle);
+      ctx.drawImage(sliceGlintSprite, -size * 0.7, -size * 0.35, size * 1.4, size * 0.7);
+      ctx.restore();
+    }
+  }
   ctx.restore();
 }
 

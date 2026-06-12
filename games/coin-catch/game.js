@@ -15,6 +15,7 @@ const BASKET_WIDTH = 86;
 const BASKET_HEIGHT = 26;
 const STORAGE_KEY = "codex-coin-catch-best";
 
+const sceneImage = loadImage("../../assets/scenes/coin-catch-market.png");
 const coverImage = loadImage("../../assets/covers/coin-catch.png");
 const itemSprites = {
   coin: loadImage("../../assets/sprites/coin-catch/coin.png"),
@@ -22,6 +23,7 @@ const itemSprites = {
   rock: loadImage("../../assets/sprites/coin-catch/rock.png"),
 };
 const basketSprite = loadImage("../../assets/sprites/coin-catch/basket.png");
+const coinSparkSprite = loadImage("../../assets/effects/coin-spark.png");
 
 const state = {
   basketX: WIDTH / 2,
@@ -102,6 +104,7 @@ function update(step) {
     particle.x += particle.vx * step;
     particle.y += particle.vy * step;
     particle.vy += 0.05 * step;
+    particle.rotation += particle.spin * step;
     return particle.life > 0;
   });
   updateHud();
@@ -167,6 +170,9 @@ function burst(x, y, color, count) {
       vy: Math.sin(angle) * speed,
       color,
       life: 24 + Math.random() * 12,
+      size: 18 + Math.random() * 16,
+      rotation: Math.random() * Math.PI * 2,
+      spin: (Math.random() - 0.5) * 0.16,
     });
   }
 }
@@ -189,6 +195,10 @@ function draw() {
 }
 
 function drawBackground() {
+  if (drawSceneBackground(sceneImage)) {
+    return;
+  }
+
   const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
   gradient.addColorStop(0, "#fffdf5");
   gradient.addColorStop(0.58, "#fffbeb");
@@ -199,7 +209,7 @@ function drawBackground() {
 }
 
 function drawWorld() {
-  ctx.fillStyle = "rgba(255, 255, 255, 0.52)";
+  ctx.fillStyle = "rgba(255, 255, 255, 0.36)";
   roundRect(18, 18, WIDTH - 36, HEIGHT - 36, 22);
   ctx.fill();
 
@@ -305,15 +315,49 @@ function drawCoverBackground(image, alpha) {
   ctx.restore();
 }
 
+function drawSceneBackground(image) {
+  if (!isImageReady(image)) return false;
+  ctx.save();
+  drawImageCover(image, 0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "rgba(255, 251, 235, 0.1)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.restore();
+  return true;
+}
+
+function drawImageCover(image, x, y, width, height) {
+  const scale = Math.max(width / image.naturalWidth, height / image.naturalHeight);
+  const sourceWidth = width / scale;
+  const sourceHeight = height / scale;
+  const sourceX = (image.naturalWidth - sourceWidth) / 2;
+  const sourceY = (image.naturalHeight - sourceHeight) / 2;
+  ctx.drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, x, y, width, height);
+}
+
 function drawParticles() {
+  ctx.save();
   for (const particle of state.particles) {
     ctx.globalAlpha = Math.max(0, particle.life / 36);
-    ctx.fillStyle = particle.color;
-    ctx.beginPath();
-    ctx.arc(particle.x, particle.y, 3.2, 0, Math.PI * 2);
-    ctx.fill();
+    if (isImageReady(coinSparkSprite)) {
+      ctx.save();
+      ctx.translate(particle.x, particle.y);
+      ctx.rotate(particle.rotation);
+      ctx.drawImage(
+        coinSparkSprite,
+        -particle.size / 2,
+        -particle.size / 2,
+        particle.size,
+        particle.size
+      );
+      ctx.restore();
+    } else {
+      ctx.fillStyle = particle.color;
+      ctx.beginPath();
+      ctx.arc(particle.x, particle.y, 3.2, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
-  ctx.globalAlpha = 1;
+  ctx.restore();
 }
 
 function getBasket() {
