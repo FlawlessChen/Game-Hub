@@ -8,6 +8,10 @@ const restartButton = document.querySelector("#restartButton");
 const overlayRestartButton = document.querySelector("#overlayRestartButton");
 const gameOverPanel = document.querySelector("#gameOverPanel");
 const finalScore = document.querySelector("#finalScore");
+const gameShell = document.querySelector(".game-shell");
+const gamePanel = document.querySelector(".game-panel");
+const gameHeader = document.querySelector(".game-header");
+const scoreRow = document.querySelector(".score-row");
 
 const WIDTH = 420;
 const HEIGHT = 680;
@@ -17,6 +21,8 @@ const POWER_SPEED = 1.55;
 const MIN_JUMP_DISTANCE = 24;
 const JUMP_DISTANCE_SCALE = 2.65;
 const STORAGE_KEY = "codex-jump-best";
+const VIEWPORT_GUARD_MIN = 14;
+const VIEWPORT_GUARD_MAX = 28;
 
 const PLATFORM_COLORS = ["#2563eb", "#16a34a", "#f97316", "#8b5cf6", "#0f766e", "#dc2626"];
 const BASE_PLATFORM = { x: 145, y: 470 };
@@ -62,6 +68,36 @@ function resizeCanvas() {
   canvas.width = Math.max(1, Math.floor(rect.width * state.dpr));
   canvas.height = Math.max(1, Math.floor(rect.height * state.dpr));
   draw();
+}
+
+function syncViewportLayout() {
+  const viewport = window.visualViewport;
+  const viewportWidth = viewport?.width || window.innerWidth || document.documentElement.clientWidth;
+  const viewportHeight = viewport?.height || window.innerHeight || document.documentElement.clientHeight;
+  document.documentElement.style.setProperty("--app-height", `${Math.round(viewportHeight)}px`);
+  if (!gameShell || !gamePanel || !gameHeader || !scoreRow) return;
+
+  const panelStyle = window.getComputedStyle(gamePanel);
+  const shellStyle = window.getComputedStyle(gameShell);
+  const rowGap = Number.parseFloat(panelStyle.rowGap || panelStyle.gap) || 0;
+  const shellPaddingY =
+    (Number.parseFloat(shellStyle.paddingTop) || 0) +
+    (Number.parseFloat(shellStyle.paddingBottom) || 0);
+  const shellPaddingX =
+    (Number.parseFloat(shellStyle.paddingLeft) || 0) +
+    (Number.parseFloat(shellStyle.paddingRight) || 0);
+  const viewportGuard = clamp(viewportHeight * 0.035, VIEWPORT_GUARD_MIN, VIEWPORT_GUARD_MAX);
+  const reservedHeight = gameHeader.offsetHeight + scoreRow.offsetHeight + rowGap * 2 + shellPaddingY + viewportGuard;
+  const availableHeight = Math.max(300, viewportHeight - reservedHeight);
+  const availableWidth = Math.max(260, Math.min(gamePanel.clientWidth || viewportWidth, viewportWidth - shellPaddingX));
+  const fittedWidth = Math.min(464, availableWidth, availableHeight * (WIDTH / HEIGHT));
+
+  document.documentElement.style.setProperty("--playfield-width", `${Math.floor(fittedWidth)}px`);
+}
+
+function syncViewportAndCanvas() {
+  syncViewportLayout();
+  resizeCanvas();
 }
 
 function loop(time) {
@@ -458,7 +494,14 @@ canvas.addEventListener("pointerup", (event) => {
 });
 canvas.addEventListener("pointercancel", () => {
   state.charging = false;
+  state.power = 0;
+  if (!state.gameOver && !state.jumping) {
+    gameStatus.textContent = "长按蓄力，松手跳到下一个平台";
+  }
+  updateHud();
 });
+canvas.addEventListener("contextmenu", (event) => event.preventDefault());
+canvas.addEventListener("selectstart", (event) => event.preventDefault());
 
 document.addEventListener("keydown", (event) => {
   if (event.code !== "Space" || event.repeat) return;
@@ -473,12 +516,15 @@ document.addEventListener("keyup", (event) => {
 
 restartButton.addEventListener("click", resetGame);
 overlayRestartButton.addEventListener("click", resetGame);
-window.addEventListener("resize", resizeCanvas);
+window.addEventListener("resize", syncViewportAndCanvas);
+window.visualViewport?.addEventListener("resize", syncViewportAndCanvas);
+window.visualViewport?.addEventListener("scroll", syncViewportAndCanvas);
 
 if (window.GameHubProgress) {
   window.GameHubProgress.registerGamePage("jump");
 }
 
+syncViewportLayout();
 resetGame();
 resizeCanvas();
 requestAnimationFrame(loop);
