@@ -12,9 +12,14 @@ const finalScore = document.querySelector("#finalScore");
 const WIDTH = 420;
 const HEIGHT = 680;
 const PLAYER_RADIUS = 18;
-const MAX_POWER = 105;
-const POWER_SPEED = 1.65;
+const MAX_POWER = 100;
+const POWER_SPEED = 1.55;
+const MIN_JUMP_DISTANCE = 24;
+const JUMP_DISTANCE_SCALE = 2.65;
 const STORAGE_KEY = "codex-jump-best";
+
+const PLATFORM_COLORS = ["#2563eb", "#16a34a", "#f97316", "#8b5cf6", "#0f766e", "#dc2626"];
+const BASE_PLATFORM = { x: 145, y: 470 };
 
 const state = {
   score: 0,
@@ -37,9 +42,9 @@ function resetGame() {
   state.charging = false;
   state.jumping = false;
   state.gameOver = false;
-  state.current = { x: 128, y: 500, w: 116, h: 46, color: "#2563eb" };
-  state.target = makeNextPlatform();
-  state.player = { x: state.current.x, y: state.current.y - state.current.h / 2 - PLAYER_RADIUS };
+  state.current = makePlatform(BASE_PLATFORM.x, BASE_PLATFORM.y, 118, 64);
+  state.target = makeNextPlatform(state.current);
+  state.player = topCenter(state.current);
   state.jump = null;
   gameOverPanel.hidden = true;
   gameStatus.textContent = "长按蓄力，松手跳到下一个平台";
@@ -71,44 +76,63 @@ function loop(time) {
   requestAnimationFrame(loop);
 }
 
-function makeNextPlatform() {
-  const dx = 96 + Math.random() * 110;
-  const direction = Math.random() < 0.5 ? -1 : 1;
-  const x = clamp(state.current.x + dx * direction, 84, WIDTH - 84);
-  const y = clamp(state.current.y - 76 - Math.random() * 80, 210, 430);
+function makePlatform(x, y, width = 96 + Math.random() * 34, depth = 54 + Math.random() * 18) {
   return {
     x,
     y,
-    w: 84 + Math.random() * 46,
-    h: 42 + Math.random() * 14,
-    color: Math.random() < 0.5 ? "#16a34a" : "#f97316",
+    width,
+    depth,
+    height: 50 + Math.random() * 18,
+    color: PLATFORM_COLORS[Math.floor(Math.random() * PLATFORM_COLORS.length)],
   };
+}
+
+function makeNextPlatform(from) {
+  const direction = Math.random() < 0.5 ? -1 : 1;
+  const dx = direction * (118 + Math.random() * 88);
+  const dy = -(72 + Math.random() * 86);
+  let x = from.x + dx;
+  let y = from.y + dy;
+
+  if (x < 84 || x > WIDTH - 84) {
+    x = from.x - dx * 0.78;
+  }
+
+  x = clamp(x, 82, WIDTH - 82);
+  y = clamp(y, 210, 415);
+  return makePlatform(x, y);
+}
+
+function topCenter(platform) {
+  return { x: platform.x, y: platform.y - platform.depth * 0.1 };
 }
 
 function startCharge() {
   if (state.gameOver || state.jumping) return;
   state.charging = true;
   state.power = 0;
-  gameStatus.textContent = "蓄力中...";
+  gameStatus.textContent = "蓄力中，松手起跳";
 }
 
 function releaseJump() {
   if (!state.charging || state.jumping || state.gameOver) return;
   state.charging = false;
-  const dx = state.target.x - state.current.x;
-  const dy = state.target.y - state.current.y;
-  const distance = Math.hypot(dx, dy);
-  const direction = { x: dx / distance, y: dy / distance };
-  const travel = state.power * 2.18;
+
+  const from = topCenter(state.current);
+  const to = topCenter(state.target);
+  const angle = Math.atan2(to.y - from.y, to.x - from.x);
+  const distance = MIN_JUMP_DISTANCE + state.power * JUMP_DISTANCE_SCALE;
   const end = {
-    x: state.current.x + direction.x * travel,
-    y: state.current.y + direction.y * travel - state.current.h / 2 - PLAYER_RADIUS,
+    x: from.x + Math.cos(angle) * distance,
+    y: from.y + Math.sin(angle) * distance,
   };
+
   state.jump = {
-    from: { ...state.player },
+    from: { ...from },
     to: end,
     t: 0,
-    duration: 34,
+    duration: clamp(25 + distance * 0.08, 31, 47),
+    distance,
   };
   state.jumping = true;
   gameStatus.textContent = "起跳";
@@ -116,14 +140,16 @@ function releaseJump() {
 
 function updateJump(step) {
   if (!state.jump) return;
+
   state.jump.t += step;
   const progress = Math.min(1, state.jump.t / state.jump.duration);
-  const eased = 1 - Math.pow(1 - progress, 2);
-  const arc = Math.sin(progress * Math.PI) * 82;
+  const eased = easeInOut(progress);
+  const arc = Math.sin(progress * Math.PI) * (72 + state.jump.distance * 0.18);
   state.player.x = lerp(state.jump.from.x, state.jump.to.x, eased);
   state.player.y = lerp(state.jump.from.y, state.jump.to.y, eased) - arc;
 
   if (progress < 1) return;
+
   state.player = { ...state.jump.to };
   state.jump = null;
   state.jumping = false;
@@ -131,41 +157,59 @@ function updateJump(step) {
 }
 
 function judgeLanding() {
-  const left = state.target.x - state.target.w / 2 - PLAYER_RADIUS * 0.35;
-  const right = state.target.x + state.target.w / 2 + PLAYER_RADIUS * 0.35;
-  const top = state.target.y - state.target.h / 2 - PLAYER_RADIUS * 1.2;
-  const bottom = state.target.y + state.target.h / 2;
-  const landed =
-    state.player.x >= left &&
-    state.player.x <= right &&
-    state.player.y + PLAYER_RADIUS >= top &&
-    state.player.y + PLAYER_RADIUS <= bottom;
+  const landing = { ...state.player };
+  const insideTarget = isPointOnPlatform(landing, state.target);
+  const insideCurrent = isPointOnPlatform(landing, state.current);
 
-  if (!landed) {
-    endGame();
+  if (!insideTarget) {
+    endGame(insideCurrent ? "跳得太近了" : "落空了");
     return;
   }
 
-  const centerError = Math.abs(state.player.x - state.target.x);
-  const bonus = centerError < 8 ? 2 : 1;
+  const targetCenter = topCenter(state.target);
+  const centerDistance = Math.hypot(landing.x - targetCenter.x, landing.y - targetCenter.y);
+  const bonus = centerDistance < 10 ? 2 : 1;
   state.score += bonus;
   state.best = Math.max(state.best, state.score);
   writeBest(state.best);
+
   state.current = { ...state.target };
-  state.player = { x: state.current.x, y: state.current.y - state.current.h / 2 - PLAYER_RADIUS };
-  state.target = makeNextPlatform();
+  state.player = topCenter(state.current);
+  state.target = makeNextPlatform(state.current);
+  recenterScene();
   state.power = 0;
-  gameStatus.textContent = bonus > 1 ? "完美落点，+2" : "成功，继续";
+  gameStatus.textContent = bonus > 1 ? "中心落点，+2" : "成功，继续";
   updateHud();
 }
 
-function endGame() {
+function isPointOnPlatform(point, platform) {
+  const top = topCenter(platform);
+  const dx = Math.abs(point.x - top.x) / (platform.width / 2);
+  const dy = Math.abs(point.y - top.y) / (platform.depth / 2);
+  return dx + dy <= 1.08;
+}
+
+function recenterScene() {
+  const offsetX = BASE_PLATFORM.x - state.current.x;
+  const offsetY = BASE_PLATFORM.y - state.current.y;
+  translatePlatform(state.current, offsetX, offsetY);
+  translatePlatform(state.target, offsetX, offsetY);
+  state.player.x += offsetX;
+  state.player.y += offsetY;
+}
+
+function translatePlatform(platform, offsetX, offsetY) {
+  platform.x += offsetX;
+  platform.y += offsetY;
+}
+
+function endGame(reason) {
   state.gameOver = true;
   state.charging = false;
   state.best = Math.max(state.best, state.score);
   writeBest(state.best);
   finalScore.textContent = `得分 ${state.score}`;
-  gameStatus.textContent = "落空了";
+  gameStatus.textContent = reason;
   gameOverPanel.hidden = false;
   updateHud();
 }
@@ -180,10 +224,12 @@ function draw() {
   drawBackground();
   ctx.translate(offsetX, offsetY);
   ctx.scale(scale, scale);
-  drawPlatform(state.target, true);
-  drawPlatform(state.current, false);
-  drawPowerGuide();
+
+  const platforms = [state.target, state.current].sort((a, b) => a.y - b.y);
+  for (const platform of platforms) drawPlatform(platform, platform === state.target);
+  drawJumpGuide();
   drawPlayer();
+
   ctx.restore();
 }
 
@@ -197,56 +243,107 @@ function drawBackground() {
 }
 
 function drawPlatform(platform, target) {
+  const halfW = platform.width / 2;
+  const halfD = platform.depth / 2;
+  const topY = platform.y - platform.depth * 0.1;
+
   ctx.save();
-  ctx.translate(platform.x, platform.y);
+  ctx.translate(platform.x, topY);
+
   ctx.fillStyle = "rgba(15, 23, 42, 0.12)";
-  roundRect(-platform.w / 2 + 8, -platform.h / 2 + 12, platform.w, platform.h, 12);
+  ctx.beginPath();
+  ctx.ellipse(10, platform.height + halfD + 8, halfW * 0.86, halfD * 0.42, 0, 0, Math.PI * 2);
   ctx.fill();
 
-  const gradient = ctx.createLinearGradient(0, -platform.h / 2, 0, platform.h / 2);
+  ctx.fillStyle = shadeColor(platform.color, -36);
+  ctx.beginPath();
+  ctx.moveTo(-halfW, 0);
+  ctx.lineTo(0, halfD);
+  ctx.lineTo(0, halfD + platform.height);
+  ctx.lineTo(-halfW, platform.height);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle = shadeColor(platform.color, -22);
+  ctx.beginPath();
+  ctx.moveTo(halfW, 0);
+  ctx.lineTo(0, halfD);
+  ctx.lineTo(0, halfD + platform.height);
+  ctx.lineTo(halfW, platform.height);
+  ctx.closePath();
+  ctx.fill();
+
+  const gradient = ctx.createLinearGradient(0, -halfD, 0, halfD);
   gradient.addColorStop(0, target ? "#ffffff" : "#dbeafe");
   gradient.addColorStop(0.18, platform.color);
-  gradient.addColorStop(1, shadeColor(platform.color, -24));
+  gradient.addColorStop(1, shadeColor(platform.color, -12));
   ctx.fillStyle = gradient;
-  roundRect(-platform.w / 2, -platform.h / 2, platform.w, platform.h, 12);
+  ctx.beginPath();
+  ctx.moveTo(0, -halfD);
+  ctx.lineTo(halfW, 0);
+  ctx.lineTo(0, halfD);
+  ctx.lineTo(-halfW, 0);
+  ctx.closePath();
   ctx.fill();
 
-  if (target) {
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.75)";
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.moveTo(-platform.w * 0.25, 0);
-    ctx.lineTo(platform.w * 0.25, 0);
-    ctx.stroke();
-  }
+  ctx.strokeStyle = target ? "rgba(255, 255, 255, 0.75)" : "rgba(255, 255, 255, 0.35)";
+  ctx.lineWidth = target ? 3 : 2;
+  ctx.stroke();
   ctx.restore();
 }
 
 function drawPlayer() {
-  const squash = state.charging ? 1 - state.power / MAX_POWER * 0.22 : 1;
+  const squash = state.charging ? 1 - (state.power / MAX_POWER) * 0.24 : 1;
+  const shadowScale = state.jumping ? 0.72 : 1;
+
   ctx.save();
-  ctx.translate(state.player.x, state.player.y + PLAYER_RADIUS);
-  ctx.scale(1 + (1 - squash) * 0.45, squash);
-  const gradient = ctx.createRadialGradient(-6, -10, 5, 0, 0, PLAYER_RADIUS * 1.3);
+  ctx.fillStyle = "rgba(15, 23, 42, 0.16)";
+  ctx.beginPath();
+  ctx.ellipse(state.player.x, state.player.y + 18, 19 * shadowScale, 7 * shadowScale, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.translate(state.player.x, state.player.y);
+  ctx.scale(1 + (1 - squash) * 0.42, squash);
+
+  const gradient = ctx.createRadialGradient(-6, -30, 5, 0, -18, 38);
   gradient.addColorStop(0, "#ffffff");
   gradient.addColorStop(0.18, "#60a5fa");
   gradient.addColorStop(1, "#1d4ed8");
   ctx.fillStyle = gradient;
+  roundRect(-PLAYER_RADIUS, -PLAYER_RADIUS * 2.2, PLAYER_RADIUS * 2, PLAYER_RADIUS * 2.4, 13);
+  ctx.fill();
+
+  ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
   ctx.beginPath();
-  ctx.arc(0, -PLAYER_RADIUS, PLAYER_RADIUS, 0, Math.PI * 2);
+  ctx.arc(-6, -PLAYER_RADIUS * 1.55, 4, 0, Math.PI * 2);
   ctx.fill();
   ctx.restore();
 }
 
-function drawPowerGuide() {
-  if (!state.charging) return;
-  const percent = state.power / MAX_POWER;
-  ctx.fillStyle = "rgba(15, 23, 42, 0.12)";
-  roundRect(90, HEIGHT - 78, 240, 12, 999);
-  ctx.fill();
-  ctx.fillStyle = "#2563eb";
-  roundRect(90, HEIGHT - 78, 240 * percent, 12, 999);
-  ctx.fill();
+function drawJumpGuide() {
+  const from = topCenter(state.current);
+  const to = topCenter(state.target);
+
+  ctx.save();
+  ctx.strokeStyle = "rgba(15, 23, 42, 0.18)";
+  ctx.setLineDash([5, 8]);
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(from.x, from.y);
+  ctx.lineTo(to.x, to.y);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  if (state.charging) {
+    const percent = state.power / MAX_POWER;
+    ctx.fillStyle = "rgba(15, 23, 42, 0.12)";
+    roundRect(86, HEIGHT - 78, 248, 12, 999);
+    ctx.fill();
+    ctx.fillStyle = "#2563eb";
+    roundRect(86, HEIGHT - 78, 248 * percent, 12, 999);
+    ctx.fill();
+  }
+  ctx.restore();
 }
 
 function updateHud() {
@@ -285,6 +382,10 @@ function lerp(start, end, progress) {
   return start + (end - start) * progress;
 }
 
+function easeInOut(progress) {
+  return progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+}
+
 function readBest() {
   try {
     return Number(localStorage.getItem(STORAGE_KEY) || 0);
@@ -317,6 +418,18 @@ canvas.addEventListener("pointerup", (event) => {
 canvas.addEventListener("pointercancel", () => {
   state.charging = false;
 });
+
+document.addEventListener("keydown", (event) => {
+  if (event.code !== "Space" || event.repeat) return;
+  event.preventDefault();
+  startCharge();
+});
+document.addEventListener("keyup", (event) => {
+  if (event.code !== "Space") return;
+  event.preventDefault();
+  releaseJump();
+});
+
 restartButton.addEventListener("click", resetGame);
 overlayRestartButton.addEventListener("click", resetGame);
 window.addEventListener("resize", resizeCanvas);
