@@ -28,6 +28,7 @@ body {
   max-width: 100%;
   min-height: 100vh;
   min-height: 100svh;
+  min-height: var(--app-height, 100svh);
   overflow-x: hidden;
   color: var(--ink);
   background:
@@ -53,6 +54,7 @@ a {
   min-width: 0;
   min-height: 100vh;
   min-height: 100svh;
+  min-height: var(--app-height, 100svh);
   margin: 0 auto;
   padding: 1.25rem 0 2.5rem;
 }
@@ -430,8 +432,8 @@ a {
 
   .game-page {
     width: min(100% - 0.75rem, 1120px);
-    padding-top: 0.5rem;
-    padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+    padding-top: max(0.5rem, calc(env(safe-area-inset-top) + var(--browser-ui-guard, 0px)));
+    padding-bottom: max(0.5rem, calc(env(safe-area-inset-bottom) + var(--browser-ui-guard, 0px)));
   }
 
   .game-header {
@@ -509,7 +511,7 @@ a {
   }
 
   .board-wrap {
-    width: min(100%, max(13rem, calc(100svh - 17rem)));
+    width: min(100%, max(13rem, calc(var(--app-height, 100svh) - 17rem - var(--browser-ui-guard, 0px))));
     margin: 0 auto;
   }
 

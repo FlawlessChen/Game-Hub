@@ -26,6 +26,7 @@ body {
   max-width: 100%;
   min-height: 100vh;
   min-height: 100svh;
+  min-height: var(--app-height, 100svh);
   overflow-x: hidden;
   color: var(--text);
   background: linear-gradient(180deg, #fbfdff 0%, var(--bg) 56%, #e9eff6 100%);
@@ -47,9 +48,12 @@ a {
   display: grid;
   min-height: 100vh;
   min-height: 100svh;
+  min-height: var(--app-height, 100svh);
   place-items: center;
-  padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right))
-    max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+  padding: max(1rem, calc(env(safe-area-inset-top) + var(--browser-ui-guard, 0px)))
+    max(1rem, env(safe-area-inset-right))
+    max(1rem, calc(env(safe-area-inset-bottom) + var(--browser-ui-guard, 0px)))
+    max(1rem, env(safe-area-inset-left));
 }
 
 .game-panel {
@@ -128,7 +132,7 @@ button:hover {
   display: grid;
   overflow: hidden;
   aspect-ratio: 3 / 5;
-  width: min(100%, 29rem);
+  width: min(100%, var(--playfield-width, 29rem), 29rem);
   max-width: 100%;
   margin: 0 auto;
   background: var(--panel);
@@ -177,8 +181,12 @@ canvas {
 
 @media (max-width: 520px) {
   .game-shell {
-    align-items: stretch;
-    padding: 0.75rem;
+    align-items: start;
+    place-items: start center;
+    padding: max(0.5rem, calc(env(safe-area-inset-top) + var(--browser-ui-guard, 0px)))
+      max(0.5rem, env(safe-area-inset-right))
+      max(0.5rem, calc(env(safe-area-inset-bottom) + var(--browser-ui-guard, 0px)))
+      max(0.5rem, env(safe-area-inset-left));
   }
 
   .game-panel {
@@ -201,8 +209,8 @@ canvas {
 
   .canvas-wrap {
     justify-self: start;
-    width: min(100%, 360px);
-    min-height: 32rem;
+    width: min(100%, var(--playfield-width, 360px));
+    min-height: 0;
   }
 }
 
@@ -212,6 +220,6 @@ canvas {
   }
 
   .canvas-wrap {
-    width: min(100%, 24rem);
+    width: min(100%, var(--playfield-width, 24rem), 24rem);
   }
 }

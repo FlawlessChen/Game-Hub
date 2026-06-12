@@ -508,6 +508,7 @@ canvas.addEventListener("pointercancel", handlePointerUp);
 restartButton.addEventListener("click", resetGame);
 overlayRestartButton.addEventListener("click", resetGame);
 window.addEventListener("resize", resizeCanvas);
+window.addEventListener("gamehub:viewportchange", resizeCanvas);
 
 if (window.GameHubProgress) {
   window.GameHubProgress.registerGamePage("fruit-slice");

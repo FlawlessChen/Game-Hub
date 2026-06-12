@@ -516,6 +516,7 @@ speedButtons.forEach((button) => {
 
 window.addEventListener("keydown", handleKeydown);
 window.addEventListener("resize", render);
+window.addEventListener("gamehub:viewportchange", render);
 canvas.addEventListener("touchstart", handleTouchStart, { passive: true });
 canvas.addEventListener("touchend", handleTouchEnd);
 

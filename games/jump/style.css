@@ -54,8 +54,10 @@ a {
   min-height: 100svh;
   min-height: var(--app-height, 100svh);
   place-items: center;
-  padding: max(0.9rem, env(safe-area-inset-top)) max(0.9rem, env(safe-area-inset-right))
-    max(0.9rem, env(safe-area-inset-bottom)) max(0.9rem, env(safe-area-inset-left));
+  padding: max(0.9rem, calc(env(safe-area-inset-top) + var(--browser-ui-guard, 0px)))
+    max(0.9rem, env(safe-area-inset-right))
+    max(0.9rem, calc(env(safe-area-inset-bottom) + var(--browser-ui-guard, 0px)))
+    max(0.9rem, env(safe-area-inset-left));
 }
 
 .game-panel {
@@ -212,8 +214,10 @@ canvas {
   .game-shell {
     align-items: start;
     place-items: start center;
-    padding: max(0.5rem, env(safe-area-inset-top)) max(0.5rem, env(safe-area-inset-right))
-      max(0.5rem, env(safe-area-inset-bottom)) max(0.5rem, env(safe-area-inset-left));
+    padding: max(0.5rem, calc(env(safe-area-inset-top) + var(--browser-ui-guard, 0px)))
+      max(0.5rem, env(safe-area-inset-right))
+      max(0.5rem, calc(env(safe-area-inset-bottom) + var(--browser-ui-guard, 0px)))
+      max(0.5rem, env(safe-area-inset-left));
   }
 
   .game-panel {

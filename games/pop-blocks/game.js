@@ -336,6 +336,7 @@ function writeBest(score) {
 canvas.addEventListener("pointerdown", handleTap);
 restartButton.addEventListener("click", resetGame);
 window.addEventListener("resize", resizeCanvas);
+window.addEventListener("gamehub:viewportchange", resizeCanvas);
 
 if (window.GameHubProgress) {
   window.GameHubProgress.registerGamePage("pop-blocks");

@@ -517,6 +517,7 @@ document.addEventListener("keyup", (event) => {
 restartButton.addEventListener("click", resetGame);
 overlayRestartButton.addEventListener("click", resetGame);
 window.addEventListener("resize", syncViewportAndCanvas);
+window.addEventListener("gamehub:viewportchange", syncViewportAndCanvas);
 window.visualViewport?.addEventListener("resize", syncViewportAndCanvas);
 window.visualViewport?.addEventListener("scroll", syncViewportAndCanvas);
 

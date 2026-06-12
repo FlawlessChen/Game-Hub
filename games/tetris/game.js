@@ -210,6 +210,7 @@ class UI {
     this.themeIndex = 0;
     this.resize();
     window.addEventListener("resize", () => this.resize());
+    window.addEventListener("gamehub:viewportchange", () => this.resize());
   }
 
   resize() {

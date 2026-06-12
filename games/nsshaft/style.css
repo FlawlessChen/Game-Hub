@@ -28,6 +28,7 @@ body {
   max-width: 100%;
   min-height: 100vh;
   min-height: 100svh;
+  min-height: var(--app-height, 100svh);
   overflow: hidden;
   color: var(--text);
   background: linear-gradient(180deg, #07101f 0%, var(--bg) 58%, #0f172a 100%);
@@ -49,9 +50,12 @@ a {
   display: grid;
   min-height: 100vh;
   min-height: 100svh;
+  min-height: var(--app-height, 100svh);
   place-items: center;
-  padding: max(0.75rem, env(safe-area-inset-top)) max(0.75rem, env(safe-area-inset-right))
-    max(0.75rem, env(safe-area-inset-bottom)) max(0.75rem, env(safe-area-inset-left));
+  padding: max(0.75rem, calc(env(safe-area-inset-top) + var(--browser-ui-guard, 0px)))
+    max(0.75rem, env(safe-area-inset-right))
+    max(0.75rem, calc(env(safe-area-inset-bottom) + var(--browser-ui-guard, 0px)))
+    max(0.75rem, env(safe-area-inset-left));
 }
 
 .game-panel {
@@ -132,9 +136,15 @@ button:hover {
   display: grid;
   overflow: hidden;
   aspect-ratio: 9 / 16;
-  width: min(100%, calc(100vw - 1.5rem), 450px, calc((100svh - 6.7rem) * 0.5625));
+  width: min(
+    100%,
+    calc(100vw - 1.5rem),
+    var(--playfield-width, 450px),
+    450px,
+    calc((var(--app-height, 100svh) - 6.7rem - var(--browser-ui-guard, 0px)) * 0.5625)
+  );
   max-width: 100%;
-  max-height: calc(100svh - 6.7rem);
+  max-height: calc(var(--app-height, 100svh) - 6.7rem - var(--browser-ui-guard, 0px));
   background: #07101f;
   border: 1px solid var(--line);
   border-radius: 0.5rem;
@@ -189,7 +199,11 @@ canvas {
 @media (max-width: 520px) {
   .game-shell {
     align-items: start;
-    padding: 0.55rem;
+    place-items: start center;
+    padding: max(0.45rem, calc(env(safe-area-inset-top) + var(--browser-ui-guard, 0px)))
+      max(0.45rem, env(safe-area-inset-right))
+      max(0.45rem, calc(env(safe-area-inset-bottom) + var(--browser-ui-guard, 0px)))
+      max(0.45rem, env(safe-area-inset-left));
   }
 
   .game-panel {
@@ -213,8 +227,14 @@ canvas {
   }
 
   .canvas-wrap {
-    justify-self: start;
-    width: min(100%, 360px, calc(100vw - 1.1rem), calc((100svh - 7.6rem) * 0.5625));
-    max-height: calc(100svh - 7.6rem);
+    justify-self: center;
+    width: min(
+      100%,
+      var(--playfield-width, 360px),
+      360px,
+      calc(100vw - 1.1rem),
+      calc((var(--app-height, 100svh) - 7.6rem - var(--browser-ui-guard, 0px)) * 0.5625)
+    );
+    max-height: calc(var(--app-height, 100svh) - 7.6rem - var(--browser-ui-guard, 0px));
   }
 }

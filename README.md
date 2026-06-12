@@ -31,6 +31,7 @@ css/
 games/
   */           每个小游戏独立的 HTML/CSS/JS
 js/
+  mobile-viewport.js  手机浏览器真实可视区域和安全边距同步
   progress.js  本地分数、启动次数和成就记录
   router.js    首页游戏数据、搜索和入口渲染
 tools/

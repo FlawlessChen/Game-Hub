@@ -910,6 +910,7 @@ canvas.addEventListener("pointercancel", () => {
 window.addEventListener("keydown", handleKeydown);
 window.addEventListener("keyup", handleKeyup);
 window.addEventListener("resize", render);
+window.addEventListener("gamehub:viewportchange", render);
 document.addEventListener("visibilitychange", () => {
   if (document.hidden && state.status === "running") {
     pauseGame();
