@@ -6,7 +6,8 @@ const games = [
     description: "合并数字方块，冲刺更高分数。",
     tags: ["益智", "单人"],
     art: "2048",
-    theme: "linear-gradient(135deg, #2364d8, #17a2a4)"
+    theme: "linear-gradient(135deg, #2364d8, #17a2a4)",
+    cover: "./assets/covers/2048.png"
   },
   {
     id: "snake",
@@ -15,7 +16,8 @@ const games = [
     description: "控制路线、吃掉目标、避开边界。",
     tags: ["街机", "分数"],
     art: "蛇",
-    theme: "linear-gradient(135deg, #168a5c, #4e8d22)"
+    theme: "linear-gradient(135deg, #168a5c, #4e8d22)",
+    cover: "./assets/covers/snake.png"
   },
   {
     id: "plane",
@@ -24,7 +26,8 @@ const games = [
     description: "驾驶战机，躲避敌机并击落来袭目标。",
     tags: ["射击", "动作"],
     art: "机",
-    theme: "linear-gradient(135deg, #2364d8, #17a2a4)"
+    theme: "linear-gradient(135deg, #2364d8, #17a2a4)",
+    cover: "./assets/covers/plane.png"
   },
   {
     id: "flappy",
@@ -33,7 +36,8 @@ const games = [
     description: "穿过连续水管，冲刺更高分数。",
     tags: ["时机", "街机"],
     art: "鸟",
-    theme: "linear-gradient(135deg, #ba6b12, #d64d3f)"
+    theme: "linear-gradient(135deg, #ba6b12, #d64d3f)",
+    cover: "./assets/covers/flappy.png"
   },
   {
     id: "memory",
@@ -42,7 +46,8 @@ const games = [
     description: "短时记忆配对挑战。",
     tags: ["记忆", "卡牌"],
     art: "记",
-    theme: "linear-gradient(135deg, #6a55ca, #2364d8)"
+    theme: "linear-gradient(135deg, #6a55ca, #2364d8)",
+    cover: "./assets/covers/memory.png"
   },
   {
     id: "mole",
@@ -51,7 +56,8 @@ const games = [
     description: "快速反应，击中出现的目标。",
     tags: ["反应", "限时"],
     art: "鼠",
-    theme: "linear-gradient(135deg, #c43d3d, #ba6b12)"
+    theme: "linear-gradient(135deg, #c43d3d, #ba6b12)",
+    cover: "./assets/covers/mole.png"
   },
   {
     id: "brick",
@@ -60,7 +66,8 @@ const games = [
     description: "用挡板反弹小球，击碎彩色砖块并接住道具。",
     tags: ["街机", "画布"],
     art: "砖",
-    theme: "linear-gradient(135deg, #07111f, #22c55e)"
+    theme: "linear-gradient(135deg, #07111f, #22c55e)",
+    cover: "./assets/covers/brick.png"
   },
   {
     id: "watermelon",
@@ -69,7 +76,8 @@ const games = [
     description: "拖动落点放下水果，相同水果碰撞后合成更大的水果。",
     tags: ["合成", "移动端"],
     art: "瓜",
-    theme: "linear-gradient(135deg, #16a34a, #ef4444)"
+    theme: "linear-gradient(135deg, #16a34a, #ef4444)",
+    cover: "./assets/covers/watermelon.png"
   },
   {
     id: "fruit-slice",
@@ -78,7 +86,8 @@ const games = [
     description: "滑动切开飞出的水果，避开炸弹并保持连击。",
     tags: ["反应", "滑动"],
     art: "切",
-    theme: "linear-gradient(135deg, #f97316, #22c55e)"
+    theme: "linear-gradient(135deg, #f97316, #22c55e)",
+    cover: "./assets/covers/fruit-slice.png"
   },
   {
     id: "pop-blocks",
@@ -87,7 +96,8 @@ const games = [
     description: "点击相连同色方块完成消除，连块越多得分越高。",
     tags: ["消除", "点按"],
     art: "消",
-    theme: "linear-gradient(135deg, #4f46e5, #06b6d4)"
+    theme: "linear-gradient(135deg, #4f46e5, #06b6d4)",
+    cover: "./assets/covers/pop-blocks.png"
   },
   {
     id: "jump",
@@ -96,7 +106,8 @@ const games = [
     description: "长按蓄力并松手起跳，精准落到下一个平台。",
     tags: ["蓄力", "移动端"],
     art: "跳",
-    theme: "linear-gradient(135deg, #2563eb, #16a34a)"
+    theme: "linear-gradient(135deg, #2563eb, #16a34a)",
+    cover: "./assets/covers/jump.png"
   },
   {
     id: "dodge",
@@ -105,7 +116,8 @@ const games = [
     description: "拖动角色躲避从四周飞来的危险小球，坚持越久分数越高。",
     tags: ["躲避", "拖动"],
     art: "躲",
-    theme: "linear-gradient(135deg, #0ea5e9, #dc2626)"
+    theme: "linear-gradient(135deg, #0ea5e9, #dc2626)",
+    cover: "./assets/covers/dodge.png"
   },
   {
     id: "coin-catch",
@@ -114,7 +126,8 @@ const games = [
     description: "拖动篮子接住金币和宝石，避开掉落的石头。",
     tags: ["接物", "拖动"],
     art: "金",
-    theme: "linear-gradient(135deg, #d97706, #facc15)"
+    theme: "linear-gradient(135deg, #d97706, #facc15)",
+    cover: "./assets/covers/coin-catch.png"
   },
   {
     id: "nsshaft",
@@ -123,7 +136,8 @@ const games = [
     description: "控制小方块踩平台下行，避开顶部钉子和地刺。",
     tags: ["街机", "移动端"],
     art: "层",
-    theme: "linear-gradient(135deg, #0a1020, #38bdf8)"
+    theme: "linear-gradient(135deg, #0a1020, #38bdf8)",
+    cover: "./assets/covers/nsshaft.png"
   },
   {
     id: "needle",
@@ -132,7 +146,8 @@ const games = [
     description: "把编号小针插进旋转大球，避开已有针脚。",
     tags: ["时机", "画布"],
     art: "针",
-    theme: "linear-gradient(135deg, #2563eb, #dc2626)"
+    theme: "linear-gradient(135deg, #2563eb, #dc2626)",
+    cover: "./assets/covers/needle.png"
   },
   {
     id: "tower",
@@ -141,7 +156,8 @@ const games = [
     description: "放下摆动楼层，裁掉偏差，向上叠出更高楼。",
     tags: ["时机", "堆叠"],
     art: "楼",
-    theme: "linear-gradient(135deg, #0f766e, #d97706)"
+    theme: "linear-gradient(135deg, #0f766e, #d97706)",
+    cover: "./assets/covers/tower.png"
   },
   {
     id: "tetris",
@@ -150,7 +166,8 @@ const games = [
     description: "旋转下落的方块，消除整行得分。",
     tags: ["益智", "街机"],
     art: "方",
-    theme: "linear-gradient(135deg, #6a55ca, #34c5d6)"
+    theme: "linear-gradient(135deg, #6a55ca, #34c5d6)",
+    cover: "./assets/covers/tetris.png"
   }
 ];
 
@@ -252,6 +269,20 @@ function escapeAttribute(value) {
     .replaceAll('"', "&quot;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;");
+}
+
+function getArtStyle(game) {
+  const cover = game.cover ? `; --cover-image: url("${game.cover}")` : "";
+  return escapeAttribute(`--art-bg: ${game.theme}${cover}`);
+}
+
+function renderGameArt(game, className, href = "") {
+  const classValue = `${className}${game.cover ? " has-cover" : ""}`;
+  const content = `<span>${game.art}</span>`;
+  if (!href) {
+    return `<div class="${classValue}" style="${getArtStyle(game)}">${content}</div>`;
+  }
+  return `<a class="${classValue}" style="${getArtStyle(game)}" href="${escapeAttribute(href)}" aria-label="${escapeAttribute(game.name)}">${content}</a>`;
 }
 
 function getRecentGames(limit = 4) {
@@ -417,9 +448,7 @@ function gameCard(game) {
   const progress = getProgress(game);
   return `
     <article class="game-card">
-      <a class="game-art" style="--art-bg: ${game.theme}" href="#/game/${game.id}" aria-label="${game.name}">
-        <span>${game.art}</span>
-      </a>
+      ${renderGameArt(game, "game-art", `#/game/${game.id}`)}
       <div class="game-body">
         <h3>${game.name}</h3>
         <p>${game.description}</p>
@@ -446,9 +475,7 @@ function quickGameCard(game) {
   const progress = getProgress(game);
   return `
     <article class="quick-card">
-      <a class="quick-art" style="--art-bg: ${game.theme}" href="#/game/${game.id}" aria-label="${game.name}">
-        <span>${game.art}</span>
-      </a>
+      ${renderGameArt(game, "quick-art", `#/game/${game.id}`)}
       <div class="quick-body">
         <h3>${game.name}</h3>
         <p>${progress.bestText}</p>
@@ -480,9 +507,7 @@ function challengeCard(challenge) {
   const complete = isChallengeComplete(challenge, progress);
   return `
     <article class="challenge-card ${complete ? "is-complete" : ""}">
-      <a class="challenge-art" style="--art-bg: ${challenge.game.theme}" href="#/game/${challenge.game.id}" aria-label="${challenge.game.name}">
-        <span>${challenge.game.art}</span>
-      </a>
+      ${renderGameArt(challenge.game, "challenge-art", `#/game/${challenge.game.id}`)}
       <div class="challenge-body">
         <div>
           <h3>${challenge.game.name}</h3>
@@ -518,9 +543,7 @@ function achievementGoalCard(goal) {
   const percent = Math.round(goal.metric.ratio * 100);
   return `
     <article class="goal-card ${complete ? "is-complete" : ""}" style="--goal-percent: ${percent}%">
-      <a class="goal-art" style="--art-bg: ${goal.game.theme}" href="#/game/${goal.game.id}" aria-label="${goal.game.name}">
-        <span>${goal.game.art}</span>
-      </a>
+      ${renderGameArt(goal.game, "goal-art", `#/game/${goal.game.id}`)}
       <div class="goal-body">
         <div class="goal-title">
           <h3>${goal.achievement.name}</h3>
@@ -773,9 +796,7 @@ function renderGame(id) {
   app.innerHTML = `
     <section class="detail">
       <article class="detail-panel">
-        <div class="game-art" style="--art-bg: ${game.theme}">
-          <span>${game.art}</span>
-        </div>
+        ${renderGameArt(game, "game-art")}
         <div class="detail-content">
           <h1>${game.name}</h1>
           <p>${game.description}</p>

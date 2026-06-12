@@ -254,6 +254,59 @@ a {
   border-radius: 0.5rem;
 }
 
+.game-art.has-cover,
+.quick-art.has-cover,
+.challenge-art.has-cover,
+.goal-art.has-cover {
+  overflow: hidden;
+  align-items: end;
+  justify-items: start;
+  background:
+    linear-gradient(180deg, rgba(23, 32, 51, 0.03), rgba(23, 32, 51, 0.26)),
+    var(--cover-image),
+    var(--art-bg);
+  background-position: center;
+  background-size: cover;
+}
+
+.game-art.has-cover {
+  padding: 0.75rem;
+}
+
+.game-art.has-cover span,
+.quick-art.has-cover span,
+.challenge-art.has-cover span,
+.goal-art.has-cover span {
+  position: relative;
+  color: #ffffff;
+  background: rgba(15, 23, 42, 0.42);
+  border-color: rgba(255, 255, 255, 0.34);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.22);
+  backdrop-filter: blur(10px);
+}
+
+.game-art.has-cover span {
+  width: 2.65rem;
+  height: 2.65rem;
+  font-size: 0.92rem;
+}
+
+.quick-art.has-cover,
+.challenge-art.has-cover,
+.goal-art.has-cover {
+  padding: 0.35rem;
+  justify-items: end;
+}
+
+.quick-art.has-cover span,
+.challenge-art.has-cover span,
+.goal-art.has-cover span {
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 0.35rem;
+  font-size: 0.68rem;
+}
+
 .game-body {
   padding: 1rem;
 }
@@ -832,6 +885,16 @@ a {
 
 .detail-panel .game-art {
   min-height: 22rem;
+}
+
+.detail-panel .game-art.has-cover {
+  padding: 1rem;
+}
+
+.detail-panel .game-art.has-cover span {
+  width: 3.25rem;
+  height: 3.25rem;
+  font-size: 1.05rem;
 }
 
 .detail-content {
