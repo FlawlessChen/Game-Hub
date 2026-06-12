@@ -15,6 +15,14 @@ const BASKET_WIDTH = 86;
 const BASKET_HEIGHT = 26;
 const STORAGE_KEY = "codex-coin-catch-best";
 
+const coverImage = loadImage("../../assets/covers/coin-catch.png");
+const itemSprites = {
+  coin: loadImage("../../assets/sprites/coin-catch/coin.png"),
+  gem: loadImage("../../assets/sprites/coin-catch/gem.png"),
+  rock: loadImage("../../assets/sprites/coin-catch/rock.png"),
+};
+const basketSprite = loadImage("../../assets/sprites/coin-catch/basket.png");
+
 const state = {
   basketX: WIDTH / 2,
   items: [],
@@ -187,6 +195,7 @@ function drawBackground() {
   gradient.addColorStop(1, "#fef3c7");
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+  drawCoverBackground(coverImage, 0.1);
 }
 
 function drawWorld() {
@@ -204,6 +213,12 @@ function drawItem(item) {
   ctx.save();
   ctx.translate(item.x, item.y);
   ctx.rotate(item.rotation);
+
+  const sprite = itemSprites[item.type];
+  if (drawImageAsset(sprite, -item.radius * 1.45, -item.radius * 1.45, item.radius * 2.9, item.radius * 2.9)) {
+    ctx.restore();
+    return;
+  }
 
   if (item.type === "rock") {
     ctx.fillStyle = "#64748b";
@@ -245,6 +260,10 @@ function drawItem(item) {
 
 function drawBasket() {
   const basket = getBasket();
+  if (drawImageAsset(basketSprite, basket.x - 28, basket.y - 44, basket.w + 56, basket.h + 58)) {
+    return;
+  }
+
   ctx.save();
   ctx.fillStyle = "rgba(120, 53, 15, 0.16)";
   roundRect(basket.x + 7, basket.y + 8, basket.w, basket.h, 10);
@@ -259,6 +278,30 @@ function drawBasket() {
   ctx.strokeStyle = "#78350f";
   ctx.lineWidth = 3;
   ctx.stroke();
+  ctx.restore();
+}
+
+function loadImage(src) {
+  const image = new Image();
+  image.src = src;
+  return image;
+}
+
+function isImageReady(image) {
+  return image && image.complete && image.naturalWidth > 0;
+}
+
+function drawImageAsset(image, x, y, width, height) {
+  if (!isImageReady(image)) return false;
+  ctx.drawImage(image, x, y, width, height);
+  return true;
+}
+
+function drawCoverBackground(image, alpha) {
+  if (!isImageReady(image)) return;
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
   ctx.restore();
 }
 

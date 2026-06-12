@@ -32,6 +32,9 @@ const FRUITS = [
   { name: "西瓜", radius: 80, color: "#16a34a", score: 1024 },
 ];
 
+const coverImage = loadImage("../../assets/covers/watermelon.png");
+const fruitSprites = FRUITS.map((_, index) => loadImage(`../../assets/sprites/fruit/fruit-${index}.png`));
+
 const state = {
   fruits: [],
   nextLevel: 0,
@@ -231,6 +234,7 @@ function drawBackground() {
   gradient.addColorStop(1, "#ddf0e4");
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+  drawCoverBackground(coverImage, 0.12);
 }
 
 function drawBoard() {
@@ -272,6 +276,11 @@ function drawDropper() {
 
 function drawFruit(x, y, level, radius) {
   const data = FRUITS[level];
+  const sprite = fruitSprites[level];
+  if (drawImageAsset(sprite, x - radius * 1.18, y - radius * 1.18, radius * 2.36, radius * 2.36)) {
+    return;
+  }
+
   const gradient = ctx.createRadialGradient(x - radius * 0.35, y - radius * 0.4, radius * 0.15, x, y, radius);
   gradient.addColorStop(0, "#ffffff");
   gradient.addColorStop(0.18, data.color);
@@ -299,6 +308,30 @@ function drawFruit(x, y, level, radius) {
     ctx.textBaseline = "middle";
     ctx.fillText(data.name.slice(0, 1), x, y + 1);
   }
+  ctx.restore();
+}
+
+function loadImage(src) {
+  const image = new Image();
+  image.src = src;
+  return image;
+}
+
+function isImageReady(image) {
+  return image && image.complete && image.naturalWidth > 0;
+}
+
+function drawImageAsset(image, x, y, width, height) {
+  if (!isImageReady(image)) return false;
+  ctx.drawImage(image, x, y, width, height);
+  return true;
+}
+
+function drawCoverBackground(image, alpha) {
+  if (!isImageReady(image)) return;
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
   ctx.restore();
 }
 

@@ -21,6 +21,10 @@ const STORAGE_KEY = "codex-jump-best";
 const PLATFORM_COLORS = ["#2563eb", "#16a34a", "#f97316", "#8b5cf6", "#0f766e", "#dc2626"];
 const BASE_PLATFORM = { x: 145, y: 470 };
 
+const coverImage = loadImage("../../assets/covers/jump.png");
+const playerSprite = loadImage("../../assets/sprites/jump/player.png");
+const platformTopSprite = loadImage("../../assets/sprites/jump/platform-top.png");
+
 const state = {
   score: 0,
   best: readBest(),
@@ -240,6 +244,7 @@ function drawBackground() {
   gradient.addColorStop(1, "#dbeafe");
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+  drawCoverBackground(coverImage, 0.09);
 }
 
 function drawPlatform(platform, target) {
@@ -289,6 +294,13 @@ function drawPlatform(platform, target) {
   ctx.strokeStyle = target ? "rgba(255, 255, 255, 0.75)" : "rgba(255, 255, 255, 0.35)";
   ctx.lineWidth = target ? 3 : 2;
   ctx.stroke();
+
+  if (isImageReady(platformTopSprite)) {
+    ctx.save();
+    ctx.globalAlpha = target ? 0.76 : 0.5;
+    ctx.drawImage(platformTopSprite, -halfW, -halfD, halfW * 2, halfD * 2);
+    ctx.restore();
+  }
   ctx.restore();
 }
 
@@ -305,6 +317,11 @@ function drawPlayer() {
   ctx.translate(state.player.x, state.player.y);
   ctx.scale(1 + (1 - squash) * 0.42, squash);
 
+  if (drawImageAsset(playerSprite, -PLAYER_RADIUS * 1.72, -PLAYER_RADIUS * 2.85, PLAYER_RADIUS * 3.44, PLAYER_RADIUS * 4.1)) {
+    ctx.restore();
+    return;
+  }
+
   const gradient = ctx.createRadialGradient(-6, -30, 5, 0, -18, 38);
   gradient.addColorStop(0, "#ffffff");
   gradient.addColorStop(0.18, "#60a5fa");
@@ -317,6 +334,30 @@ function drawPlayer() {
   ctx.beginPath();
   ctx.arc(-6, -PLAYER_RADIUS * 1.55, 4, 0, Math.PI * 2);
   ctx.fill();
+  ctx.restore();
+}
+
+function loadImage(src) {
+  const image = new Image();
+  image.src = src;
+  return image;
+}
+
+function isImageReady(image) {
+  return image && image.complete && image.naturalWidth > 0;
+}
+
+function drawImageAsset(image, x, y, width, height) {
+  if (!isImageReady(image)) return false;
+  ctx.drawImage(image, x, y, width, height);
+  return true;
+}
+
+function drawCoverBackground(image, alpha) {
+  if (!isImageReady(image)) return;
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
   ctx.restore();
 }
 

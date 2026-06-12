@@ -22,6 +22,10 @@ const FRUITS = [
   { name: "西瓜", color: "#16a34a", radius: 34, score: 22 },
 ];
 
+const coverImage = loadImage("../../assets/covers/fruit-slice.png");
+const fruitSprites = FRUITS.map((_, index) => loadImage(`../../assets/sprites/fruit-slice/fruit-${index}.png`));
+const bombSprite = loadImage("../../assets/sprites/fruit-slice/bomb.png");
+
 const state = {
   items: [],
   cuts: [],
@@ -119,7 +123,8 @@ function spawnWave() {
 }
 
 function spawnItem(bomb = false) {
-  const fruit = FRUITS[Math.floor(Math.random() * FRUITS.length)];
+  const fruitIndex = Math.floor(Math.random() * FRUITS.length);
+  const fruit = FRUITS[fruitIndex];
   const radius = bomb ? 28 : fruit.radius;
   const fromLeft = Math.random() < 0.5;
   state.items.push({
@@ -128,6 +133,7 @@ function spawnItem(bomb = false) {
     name: bomb ? "炸弹" : fruit.name,
     color: bomb ? "#111827" : fruit.color,
     score: bomb ? 0 : fruit.score,
+    spriteIndex: bomb ? -1 : fruitIndex,
     radius,
     x: fromLeft ? 40 + Math.random() * 80 : WIDTH - 40 - Math.random() * 80,
     y: HEIGHT + radius + 16,
@@ -228,6 +234,7 @@ function drawBackground() {
   gradient.addColorStop(1, "#fed7aa");
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+  drawCoverBackground(coverImage, 0.1);
 }
 
 function drawHudHint() {
@@ -245,6 +252,12 @@ function drawItem(item) {
   ctx.save();
   ctx.translate(item.x, item.y);
   ctx.rotate(item.rotation);
+
+  const sprite = item.bomb ? bombSprite : fruitSprites[item.spriteIndex];
+  if (drawImageAsset(sprite, -item.radius * 1.35, -item.radius * 1.35, item.radius * 2.7, item.radius * 2.7)) {
+    ctx.restore();
+    return;
+  }
 
   if (item.bomb) {
     const gradient = ctx.createRadialGradient(-8, -10, 6, 0, 0, item.radius);
@@ -279,6 +292,30 @@ function drawItem(item) {
     ctx.fill();
   }
 
+  ctx.restore();
+}
+
+function loadImage(src) {
+  const image = new Image();
+  image.src = src;
+  return image;
+}
+
+function isImageReady(image) {
+  return image && image.complete && image.naturalWidth > 0;
+}
+
+function drawImageAsset(image, x, y, width, height) {
+  if (!isImageReady(image)) return false;
+  ctx.drawImage(image, x, y, width, height);
+  return true;
+}
+
+function drawCoverBackground(image, alpha) {
+  if (!isImageReady(image)) return;
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
   ctx.restore();
 }
 
